@@ -6,6 +6,8 @@ typedef unsigned long int rlim64_t;
 
 #include <libzfs.h>
 #include <libzfs/sys/zfs_context.h>
+#include <libzfs/libzutil.h>
+#include <libzfs/sys/fs/zfs.h>
 
 #include <memory.h>
 #include <string.h>
@@ -79,11 +81,11 @@ char *sZPOOL_CONFIG_DEGRADED = ZPOOL_CONFIG_DEGRADED;
 char *sZPOOL_CONFIG_REMOVED = ZPOOL_CONFIG_REMOVED;
 char *sZPOOL_CONFIG_FRU = ZPOOL_CONFIG_FRU;
 char *sZPOOL_CONFIG_AUX_STATE = ZPOOL_CONFIG_AUX_STATE;
-char *sZPOOL_REWIND_POLICY = ZPOOL_REWIND_POLICY;
-char *sZPOOL_REWIND_REQUEST = ZPOOL_REWIND_REQUEST;
-char *sZPOOL_REWIND_REQUEST_TXG = ZPOOL_REWIND_REQUEST_TXG;
-char *sZPOOL_REWIND_META_THRESH = ZPOOL_REWIND_META_THRESH;
-char *sZPOOL_REWIND_DATA_THRESH = ZPOOL_REWIND_DATA_THRESH;
+char *sZPOOL_LOAD_POLICY = ZPOOL_LOAD_POLICY;
+char *sZPOOL_LOAD_REWIND_POLICY = ZPOOL_LOAD_REWIND_POLICY;
+char *sZPOOL_LOAD_REQUEST_TXG = ZPOOL_LOAD_REQUEST_TXG;
+char *sZPOOL_LOAD_META_THRESH = ZPOOL_LOAD_META_THRESH;
+char *sZPOOL_LOAD_DATA_THRESH = ZPOOL_LOAD_DATA_THRESH;
 char *sZPOOL_CONFIG_LOAD_TIME = ZPOOL_CONFIG_LOAD_TIME;
 char *sZPOOL_CONFIG_LOAD_DATA_ERRORS = ZPOOL_CONFIG_LOAD_DATA_ERRORS;
 char *sZPOOL_CONFIG_REWIND_TIME = ZPOOL_CONFIG_REWIND_TIME;
@@ -497,13 +499,26 @@ nvlist_ptr go_zpool_search_import(libzfs_handle_ptr zfsh, int paths, char **path
 	importargs_t idata;
 	memset(&idata, 0, sizeof(importargs_t));
 	nvlist_ptr pools = NULL;
+	nvlist_t *policy = NULL;
+	uint32_t rewind_policy = ZPOOL_NO_REWIND;
+	uint64_t txg = -1ULL;
+	int ret = 0;
+
+	if (nvlist_alloc(&policy, NV_UNIQUE_NAME, 0) != 0 ||
+	    nvlist_add_uint64(policy, ZPOOL_LOAD_REQUEST_TXG, txg) != 0 ||
+	    nvlist_add_uint32(policy, ZPOOL_LOAD_REWIND_POLICY,
+	    rewind_policy) != 0) {
+			return NULL;
+		}
+
 	idata.path = path;
 	idata.paths = paths;
-	// idata.scan = 0;
+	idata.scan = do_scan;
 
-	thread_init();
-	pools = zpool_search_import(zfsh, &idata);
-	thread_fini();
+	//thread_init();
+	//pools = zpool_search_import(zfsh, &idata, &libzpool_config_ops);
+	//thread_fini();
+	nvlist_free(policy);
 	return pools;
 }
 
@@ -512,7 +527,7 @@ int do_zpool_clear(zpool_list_t *pool, const char *device, u_int32_t rewind_poli
 	nvlist_t *policy = NULL;
 	int ret = 0;
 	if (nvlist_alloc(&policy, NV_UNIQUE_NAME, 0) != 0 ||
-	    nvlist_add_uint32(policy, ZPOOL_REWIND_REQUEST, rewind_policy) != 0)
+	    nvlist_add_uint32(policy, ZPOOL_LOAD_REWIND_POLICY, rewind_policy) != 0)
 		return (1);
 
 	if (zpool_clear(pool->zph, device, policy) != 0)

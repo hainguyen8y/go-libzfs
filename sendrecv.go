@@ -131,7 +131,6 @@ func (d *Dataset) send(FromName string, outf *os.File, flags *SendFlags) (err er
 func (d *Dataset) SendOne(FromName string, outf *os.File, flags *SendFlags) (err error) {
 	var cfromname, ctoname *C.char
 	var dpath string
-	var lzc_send_flags uint32
 
 	if d.Type == DatasetTypeSnapshot || (len(FromName) > 0 && !strings.Contains(FromName, "#")) {
 		err = fmt.Errorf(
@@ -143,14 +142,8 @@ func (d *Dataset) SendOne(FromName string, outf *os.File, flags *SendFlags) (err
 		return
 	}
 
-	if flags.LargeBlock {
-		lzc_send_flags |= C.LZC_SEND_FLAG_LARGE_BLOCK
-	}
-	if flags.EmbedData {
-		lzc_send_flags |= C.LZC_SEND_FLAG_EMBED_DATA
-	}
-	// if (flags.Compress)
-	// 	lzc_send_flags |= LZC_SEND_FLAG_COMPRESS;
+	cflags := to_sendflags_t(flags)
+	defer C.free(unsafe.Pointer(cflags))
 	if dpath, err = d.Path(); err != nil {
 		return
 	}
@@ -163,7 +156,7 @@ func (d *Dataset) SendOne(FromName string, outf *os.File, flags *SendFlags) (err
 	}
 	ctoname = C.CString(path.Base(dpath))
 	defer C.free(unsafe.Pointer(ctoname))
-	cerr := C.zfs_send_one(d.list.zh, cfromname, C.int(outf.Fd()), lzc_send_flags)
+	cerr := C.zfs_send_one(d.list.zh, cfromname, C.int(outf.Fd()), *cflags)
 	if cerr != 0 {
 		err = LastError()
 	}

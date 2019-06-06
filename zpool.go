@@ -307,7 +307,9 @@ func PoolImportSearch(searchpaths []string) (epools []ExportedPool, err error) {
 		defer C.free(unsafe.Pointer(csPath))
 		C.strings_setat(cpaths, C.int(i), csPath)
 	}
-
+	if cpaths == nil {
+		return
+	}
 	pools := C.go_zpool_search_import(C.libzfsHandle, C.int(numofp), cpaths, C.B_FALSE)
 	defer C.nvlist_free(pools)
 	elem = C.nvlist_next_nvpair(pools, elem)
@@ -515,7 +517,9 @@ func (pool *Pool) ReloadProperties() (err error) {
 	pool.Properties = make([]Property, PoolNumProps+1)
 	next := propList
 	for next != nil {
-		pool.Properties[next.property] = Property{Value: C.GoString(&(next.value[0])), Source: C.GoString(&(next.source[0]))}
+		if next.property< C.int(PoolNumProps) {
+			pool.Properties[next.property] = Property{Value: C.GoString(&(next.value[0])), Source: C.GoString(&(next.source[0]))}
+		}
 		next = C.next_property(next)
 	}
 	C.free_properties(propList)
