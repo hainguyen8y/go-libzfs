@@ -203,6 +203,25 @@ func zfsTestDatasetDestroy(t *testing.T) {
 	print("PASS\n\n")
 }
 
+/*
+func TestGetWrittenSnapshot(t *testing.T) {
+	d, err := zfs.DatasetOpen("CustDATA")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	defer d.Close()
+	userprop_name := "written" + "@zfs-auto-snap_hourly-2019-06-07-0403"
+	t.Log(userprop_name)
+	userprop, err := d.GetUserProperty(userprop_name)
+	if err != nil {
+		t.Log(err)
+	} else {
+		t.Logf("%s->%s:%s\n", userprop_name, userprop.Source, userprop.Value)
+	}
+	print("PASS\n\n")
+}
+*/
 /* ------------------------------------------------------------------------- */
 // EXAMPLES:
 

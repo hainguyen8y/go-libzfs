@@ -193,6 +193,7 @@ property_list_t *read_user_property(dataset_list_t *dataset, const char* prop) {
 	zprop_source_t sourcetype;
 	char *strval;
 	char *sourceval;
+	char buf[ZFS_MAXPROPLEN];
 	// char source[ZFS_MAX_DATASET_NAME_LEN];
 	property_list_ptr list = new_property_list();
 
@@ -201,9 +202,11 @@ property_list_t *read_user_property(dataset_list_t *dataset, const char* prop) {
 		(void) strncpy(list->source,
 				"local", sizeof (list->source));
 		if (zfs_prop_get_userquota(dataset->zh, prop,
-			list->value, sizeof (list->value), B_TRUE) != 0) {
+			buf, sizeof (buf), B_TRUE) != 0) {
 			sourcetype = ZPROP_SRC_NONE;
-			(void) strlcpy(list->value, "-", sizeof (list->value));
+			strval = "-";
+		} else {
+			strval = buf;
 		}
 	}
 	else if (zfs_prop_written(prop)) {
@@ -211,9 +214,11 @@ property_list_t *read_user_property(dataset_list_t *dataset, const char* prop) {
 		(void) strncpy(list->source,
 				"local", sizeof (list->source));
 		if (zfs_prop_get_written(dataset->zh, prop,
-			list->value, sizeof (list->value), B_TRUE) != 0) {
+			buf, sizeof (buf), B_TRUE) != 0) {
 			sourcetype = ZPROP_SRC_NONE;
-			(void) strlcpy(list->value, "-", sizeof (list->value));
+			strval = "-";
+		} else {
+			strval = buf;
 		}
 	} else if (nvlist_lookup_nvlist(user_props,
 		prop, &propval) != 0) {
