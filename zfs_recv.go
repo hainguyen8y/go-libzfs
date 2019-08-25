@@ -36,8 +36,8 @@ func AbortResumable(dtname string) error {
 		if C.zfs_prop_get_int(zhp, C.ZFS_PROP_INCONSISTENT) == 0 ||
 			C.zfs_prop_get(zhp, C.ZFS_PROP_RECEIVE_RESUME_TOKEN,
 			nil, 0, nil, nil, 0, C.B_TRUE) == -1 {
-			err := fmt.Errorf("'%s' does not have any ",
-				"resumable receive state to abort", namepath)
+			err := fmt.Errorf("'%s' does not have any resumable receive state to abort",
+							C.GoString(namepath))
 			C.zfs_close(zhp);
 			return err
 		}
