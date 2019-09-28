@@ -12,7 +12,6 @@ package zfs
 import "C"
 
 import (
-	"errors"
 	"strings"
 	"fmt"
 	"unsafe"
@@ -26,19 +25,25 @@ func __printf(k, v *C.char) {
 func DestroySnapshot(pathname string) (err error) {
 	at := strings.Index(pathname, "@")
 	if at == -1 {
-		return errors.New("not snapshot")
+		return &Error{
+			errno: int(C.EZFS_BADTYPE),
+			message: C.GoString(C.libzfs_strerrno(C.EZFS_BADTYPE)),
+		}
 	}
 	dtpath := C.CString(pathname[:at])
 	snapspec := C.CString(pathname[at+1:])
 	nvl := C.fnvlist_alloc();
 	if nvl == nil {
-		return errors.New("not allocated memory")
+		return &Error{
+			errno: int(C.EZFS_NOMEM),
+			message: C.GoString(C.libzfs_strerrno(C.EZFS_NOMEM)),
+		}
 	}
 	defer C.nvlist_free(nvl)
 
-	zhp := C.zfs_open(C.libzfsHandle, dtpath, C.ZFS_TYPE_FILESYSTEM | C.ZFS_TYPE_VOLUME)
+	zhp := C.zfs_open(C.libzfs_get_handle(), dtpath, C.ZFS_TYPE_FILESYSTEM | C.ZFS_TYPE_VOLUME)
 	if zhp == nil {
-		return errors.New(C.GoString(C.libzfs_last_error_str()))
+		return LastError()
 	}
 	defer C.zfs_close(zhp)
 
@@ -46,15 +51,18 @@ func DestroySnapshot(pathname string) (err error) {
 	defer C.zfs_close(zhpdup)
 	cerr := C.zfs_iter_snapspec(zhpdup, snapspec, (C.zfs_iter_f)(unsafe.Pointer(C.snapshot_to_nvl_cb)), unsafe.Pointer(nvl));
 	if cerr != 0 && cerr != C.ENOENT {
-		return fmt.Errorf("iter snapspec %d: %s", int(cerr), C.GoString(C.libzfs_last_error_str()))
+		return LastError()
 	}
 
 	if C.nvlist_empty(nvl) == C.B_TRUE {
-		return errors.New("could not find any snapshots to destroy; check snapshot names.")
+		return &Error{
+			errno: int(C.ENOENT),
+			message: "could not find any snapshots to destroy; check snapshot names.",
+		}
 	}
-	cerr = C.zfs_destroy_snaps_nvl(C.libzfsHandle, nvl, C.B_TRUE);
+	cerr = C.zfs_destroy_snaps_nvl(C.libzfs_get_handle(), nvl, C.B_TRUE);
 	if cerr != 0 {
-		return fmt.Errorf("destroy snaps: %s", C.GoString(C.libzfs_last_error_str()))
+		return LastError()
 	}
 
 	return nil

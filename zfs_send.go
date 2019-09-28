@@ -9,7 +9,6 @@ package zfs
 // #include <string.h>
 import "C"
 import (
-	"errors"
 	"os"
 	"unsafe"
 )
@@ -20,9 +19,9 @@ func SendResume(outf *os.File, flags *SendFlags, resumeToken string) error {
 
 	cresume_token := C.CString(resumeToken)
 
-	rc := C.zfs_send_resume(C.libzfsHandle, cflags, C.int(outf.Fd()), cresume_token)
+	rc := C.zfs_send_resume(C.libzfs_get_handle(), cflags, C.int(outf.Fd()), cresume_token)
 	if rc != 0 {
-		return errors.New(C.GoString(C.libzfs_last_error_str()))
+		return LastError()
 	}
 	return nil
 }

@@ -1,5 +1,4 @@
 package zfs
-
 // #include <stdlib.h>
 // #include <libzfs.h>
 // #include "common.h"
@@ -91,8 +90,7 @@ func (d *Dataset) send(FromName string, outf *os.File, flags *SendFlags) (err er
 	var pd Dataset
 
 	if d.Type != DatasetTypeSnapshot || (len(FromName) > 0 && strings.Contains(FromName, "#")) {
-		err = fmt.Errorf(
-			"Unsupported method on filesystem or bookmark. Use func SendOne() for that purpose.")
+		err = NewError(int(C.EZFS_NOTSUP), "Unsupported method on filesystem or bookmark. Use func SendOne() for that purpose.")
 		return
 	}
 
@@ -131,26 +129,20 @@ func (d *Dataset) send(FromName string, outf *os.File, flags *SendFlags) (err er
 func (d *Dataset) SendOne(FromName string, outf *os.File, flags *SendFlags) (err error) {
 	var cfromname, ctoname *C.char
 	var dpath string
-	var lzc_send_flags uint32
+
 
 	if d.Type == DatasetTypeSnapshot || (len(FromName) > 0 && !strings.Contains(FromName, "#")) {
-		err = fmt.Errorf(
-			"Unsupported with snapshot. Use func Send() for that purpose.")
+		err = NewError(int(C.EZFS_NOTSUP), "Unsupported with snapshot. Use func Send() for that purpose.")
 		return
 	}
 	if flags.Replicate || flags.DoAll || flags.Props || flags.Dedup || flags.DryRun {
-		err = fmt.Errorf("Unsupported flag with filesystem or bookmark.")
+		err = NewError(int(C.EZFS_NOTSUP), "Unsupported flag with filesystem or bookmark.")
 		return
 	}
 
-	if flags.LargeBlock {
-		lzc_send_flags |= C.LZC_SEND_FLAG_LARGE_BLOCK
-	}
-	if flags.EmbedData {
-		lzc_send_flags |= C.LZC_SEND_FLAG_EMBED_DATA
-	}
-	// if (flags.Compress)
-	// 	lzc_send_flags |= LZC_SEND_FLAG_COMPRESS;
+	cflags := to_sendflags_t(flags)
+	defer C.free(unsafe.Pointer(cflags))
+
 	if dpath, err = d.Path(); err != nil {
 		return
 	}
@@ -163,7 +155,7 @@ func (d *Dataset) SendOne(FromName string, outf *os.File, flags *SendFlags) (err
 	}
 	ctoname = C.CString(path.Base(dpath))
 	defer C.free(unsafe.Pointer(ctoname))
-	cerr := C.zfs_send_one(d.list.zh, cfromname, C.int(outf.Fd()), lzc_send_flags)
+	cerr := C.gozfs_send_one(d.list.zh, cfromname, C.int(outf.Fd()), cflags, nil)
 	if cerr != 0 {
 		err = LastError()
 	}
@@ -197,11 +189,11 @@ func (d *Dataset) SendFrom(FromName string, outf *os.File, flags SendFlags) (err
 		from = strings.Split(FromName, "@")
 
 		if len(from[0]) > 0 && from[0] != dest[0] {
-			err = fmt.Errorf("Incremental source must be in same filesystem.")
+			err = NewError(int(C.EZFS_NOTSUP), "incremental source must be in same filesystem.")
 			return
 		}
 		if len(from) < 2 || strings.Contains(from[1], "@") || strings.Contains(from[1], "/") {
-			err = fmt.Errorf("Invalid incremental source.")
+			err = NewError(int(C.EZFS_NOTSUP), "invalid incremental source.")
 			return
 		}
 	}
@@ -232,7 +224,7 @@ func (d *Dataset) SendSize(FromName string, flags SendFlags) (size int64, err er
 		var tmpe error
 		saveOut := C.redirect_libzfs_stdout(C.int(w.Fd()))
 		if saveOut < 0 {
-			tmpe = fmt.Errorf("Redirection of zfslib stdout failed %d", saveOut)
+			tmpe = NewError(int(C.EZFS_NOTSUP), fmt.Sprintf("Redirection of zfslib stdout failed %d", saveOut))
 		} else {
 			tmpe = d.send(FromName, w, &flags)
 			C.restore_libzfs_stdout(saveOut)
@@ -270,7 +262,7 @@ func (d *Dataset) Receive(inf *os.File, flags RecvFlags) (err error) {
 	}
 	props := C.new_property_nvlist()
 	if props == nil {
-		err = fmt.Errorf("Out of memory func (d *Dataset) Recv()")
+		err = NewError(int(C.EZFS_NOMEM), "Out of memory func (d *Dataset) Recv()")
 		return
 	}
 	defer C.nvlist_free(props)
@@ -278,9 +270,9 @@ func (d *Dataset) Receive(inf *os.File, flags RecvFlags) (err error) {
 	defer C.free(unsafe.Pointer(cflags))
 	dest := C.CString(dpath)
 	defer C.free(unsafe.Pointer(dest))
-	ec := C.zfs_receive(C.libzfsHandle, dest, nil, cflags, C.int(inf.Fd()), nil)
+	ec := C.zfs_receive(C.libzfs_get_handle(), dest, nil, cflags, C.int(inf.Fd()), nil)
 	if ec != 0 {
-		err = fmt.Errorf("ZFS receive of %s failed. %s", C.GoString(dest), LastError().Error())
+		err = LastError()
 	}
 	return
 }
