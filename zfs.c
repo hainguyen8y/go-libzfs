@@ -303,9 +303,9 @@ int gozfs_send_one(zfs_handle_t *zhp, const char *from, int fd, sendflags_t *fla
 
 int gozfs_send_one(zfs_handle_t *zhp, const char *from, int fd, sendflags_t *flags, const char *redactbook) {
 #if LIBZFS_VERSION_PATCH != 1
-	return zfs_send_one(zhp, from, fd, *flags);
-#else
 	return zfs_send_one(zhp, from, fd, flags, redactbook);
+#else
+	return zfs_send_one(zhp, from, fd, *flags);
 #endif
 }
 #endif
