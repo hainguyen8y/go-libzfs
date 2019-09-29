@@ -10,8 +10,10 @@
 	//#warning "This automatically detects the libzfs version for compiling"
 	#ifdef IMPORT_ORDER_PREFERRED_1
 		#define LIBZFS_VERSION_MINOR	7
+		#define LIBZFS_VERSION_PATCH	13
 	#else
 		#define LIBZFS_VERSION_MINOR	8
+		#define LIBZFS_VERSION_PATCH	1
 	#endif
 #endif //LIBZFS_VERSION_MAJOR
 
