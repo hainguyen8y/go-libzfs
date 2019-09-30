@@ -288,17 +288,19 @@ int estimate_send_size(struct zfs_cmd *zc) {
 }
 #if LIBZFS_VERSION_MINOR == 7
 int gozfs_send_one(zfs_handle_t *zhp, const char *from, int fd, sendflags_t *flags, const char *redactbook) {
-	uint32_t lzc_send_flags = 0;
+    uint32_t lzc_send_flags = 0;
 
-	if flags->LargeBlock {
-		lzc_send_flags |= LZC_SEND_FLAG_LARGE_BLOCK
-	}
-	if flags->EmbedData {
-		lzc_send_flags |= LZC_SEND_FLAG_EMBED_DATA
-	}
-	// if (flags.Compress)
-	// 	lzc_send_flags |= LZC_SEND_FLAG_COMPRESS;
-	return zfs_send_one(zhp, from, fd, lzc_send_flags);
+    if (flags->largeblock) {
+        lzc_send_flags |= LZC_SEND_FLAG_LARGE_BLOCK;
+    }
+    if (flags->embed_data) {
+        lzc_send_flags |= LZC_SEND_FLAG_EMBED_DATA;
+    }
+    if (flags->compress) {
+        lzc_send_flags |= LZC_SEND_FLAG_COMPRESS;
+    }
+
+    return zfs_send_one(zhp, from, fd, lzc_send_flags);
 }
 #else
 
