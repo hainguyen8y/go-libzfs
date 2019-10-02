@@ -14,8 +14,7 @@ import (
 )
 
 func AbortResumable(dtname string) error {
-	var namepath *C.char
-	namepath = C.CString(dtname +"/%recv")
+	namepath := C.CString(dtname +"/%recv")
 	defer C.free(unsafe.Pointer(namepath))
 	cerr := C.zfs_dataset_exists(C.libzfs_get_handle(), namepath, C.ZFS_TYPE_FILESYSTEM | C.ZFS_TYPE_VOLUME)
 	if cerr != 0 {
@@ -28,7 +27,7 @@ func AbortResumable(dtname string) error {
 			}
 		}
 	} else {
-		namepath2 = C.CString(dtname)
+		namepath2 := C.CString(dtname)
 		defer C.free(unsafe.Pointer(namepath2))
 		zhp := C.zfs_open(C.libzfs_get_handle(),
 			namepath2, C.ZFS_TYPE_FILESYSTEM | C.ZFS_TYPE_VOLUME);
