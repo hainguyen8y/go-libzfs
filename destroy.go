@@ -28,7 +28,9 @@ func DestroySnapshot(pathname string) (err error) {
 		return NewError(int(C.EZFS_BADTYPE), C.GoString(C.libzfs_strerrno(C.EZFS_BADTYPE)))
 	}
 	dtpath := C.CString(pathname[:at])
+	defer C.free(unsafe.Pointer(dtpath))
 	snapspec := C.CString(pathname[at+1:])
+	defer C.free(unsafe.Pointer(snapspec))
 	nvl := C.fnvlist_alloc();
 	if nvl == nil {
 		return NewError(int(C.EZFS_NOMEM), C.GoString(C.libzfs_strerrno(C.EZFS_NOMEM)))

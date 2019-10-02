@@ -19,33 +19,6 @@ import (
 	"unsafe"
 )
 
-type SendFlags struct {
-	Verbose    bool
-	Replicate  bool
-	DoAll      bool
-	FromOrigin bool
-	Dedup      bool
-	Props      bool
-	DryRun     bool
-	Parsable   bool
-	Progress   bool
-	LargeBlock bool
-	EmbedData  bool
-	Compress   bool
-}
-
-type RecvFlags struct {
-	Verbose     bool
-	IsPrefix    bool
-	IsTail      bool
-	DryRun      bool
-	Force       bool
-	CanmountOff bool
-	Resumable   bool
-	ByteSwap    bool
-	NoMount     bool
-}
-
 func to_boolean_t(a bool) C.boolean_t {
 	if a {
 		return 1

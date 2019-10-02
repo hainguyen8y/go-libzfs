@@ -126,7 +126,7 @@ func DatasetOpenSingle(path string) (d Dataset, err error) {
 		if err == nil {
 			err = NewError(int(C.ENOENT), "dataset not found.")
 		}
-		err = NewError(err.(*Error).GetErrorCode(), fmt.Sprintf("%s - %s", err.Error(), path))
+		err = NewError(err.(*Error).ErrorCode(), fmt.Sprintf("%s - %s", err.Error(), path))
 		return
 	}
 	d.Type = DatasetType(C.dataset_type(d.list))
@@ -153,7 +153,7 @@ func datasetPropertiesTonvlist(props map[Prop]Property) (
 		C.free(unsafe.Pointer(csValue))
 		if r != 0 {
 			err = LastError()
-			err = NewError(err.(*Error).GetErrorCode(), fmt.Sprintf("failed to convert property: %s", err.Error()))
+			err = NewError(err.(*Error).ErrorCode(), fmt.Sprintf("failed to convert property: %s", err.Error()))
 			return
 		}
 	}

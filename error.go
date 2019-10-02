@@ -77,3 +77,25 @@ const (
 	EPoolreadonly                      /* pool is in read-only mode */
 	EUnknown
 )
+
+
+type Error struct {
+	code 	int
+	message	string
+}
+
+func (self *Error) Error() string {
+	return self.message
+}
+
+func (self *Error) ErrorCode() int {
+	return self.code
+}
+
+func NewError(errcode int, msg string) error {
+	return &Error{
+		code: errcode,
+		message: msg,
+	}
+}
+

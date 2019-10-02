@@ -18,6 +18,7 @@ func SendResume(outf *os.File, flags *SendFlags, resumeToken string) error {
 	defer C.free(unsafe.Pointer(cflags))
 
 	cresume_token := C.CString(resumeToken)
+	defer C.free(unsafe.Pointer(cresume_token))
 
 	rc := C.zfs_send_resume(C.libzfs_get_handle(), cflags, C.int(outf.Fd()), cresume_token)
 	if rc != 0 {

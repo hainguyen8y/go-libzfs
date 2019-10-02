@@ -295,7 +295,7 @@ func ClearLastError() (err error) {
 	return
 }
 
-func LastErrno() int {
+func LastErrorCode() int {
 	return int(C.libzfs_last_error())
 }
 
