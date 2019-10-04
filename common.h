@@ -6,7 +6,7 @@
 #define __COMMON_H__
 
 #ifndef LIBZFS_VERSION_MAJOR
-	#define LIBZFS_VERSION_MAJOR 0
+	#define LIBZFS_VERSION_MAJOR        0
 	//#warning "This automatically detects the libzfs version for compiling"
 	#ifdef IMPORT_ORDER_PREFERRED_1
 		#define LIBZFS_VERSION_MINOR	7
@@ -20,10 +20,11 @@
 #ifndef loff_t
 	#define loff_t off_t
 #endif
-#define INT_MAX_NAME 256
-#define INT_MAX_VALUE 1024
-#define	ZAP_OLDMAXVALUELEN 1024
-#define	ZFS_MAX_DATASET_NAME_LEN 256
+
+#define INT_MAX_NAME                256
+#define INT_MAX_VALUE               1024
+#define	ZAP_OLDMAXVALUELEN          1024
+#define	ZFS_MAX_DATASET_NAME_LEN    256
 
 typedef struct property_list {
 	char value[INT_MAX_VALUE];

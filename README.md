@@ -31,7 +31,7 @@ go get github.com/hainguyen8y/go-libzfs
 ```sh
 # On command line shell run
 cd $GOPATH/src/github.com/hainguyen8y/go-libzfs
-CGO_CFLAGS="-DLIBZFS_VERSION_MAJOR=0 -DLIBZFS_VERSION_MAJOR=8 -DLIBZFS_VERSION_PATCH=1" go test
+CGO_CFLAGS="-DLIBZFS_VERSION_MAJOR=0 -DLIBZFS_VERSION_MINOR=8 -DLIBZFS_VERSION_PATCH=1" go test
 ```
 
 ## Usage example

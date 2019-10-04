@@ -60,7 +60,7 @@ type SendFlags struct {
 	EmbedData  bool	`json:"embed_data"` //-e
 	Compress   bool	`json:"compress"`	//-c
 	Holds	   bool `json:"holds"`		//-h
-	LargeBlock bool `json:"large_block"`
+	LargeBlock bool `json:"large_block"` //-L
 }
 
 type RecvFlags struct {
