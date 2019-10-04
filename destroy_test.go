@@ -1,27 +1,25 @@
-package zfs_test
+package zfs
 
 import (
 	"testing"
-
-	zfs "github.com/bicomsystems/go-libzfs"
 )
 
 func TestDataset_DestroyPromote(t *testing.T) {
-	zpoolTestPoolCreate(t)
-	// defer zpoolTestPoolDestroy(t)
-	var c1, c2 zfs.Dataset
+	TestPoolCreate(t)
+	// defer TestPoolDestroy(t)
+	var c1, c2 Dataset
 
-	props := make(map[zfs.Prop]zfs.Property)
+	props := make(map[Prop]Property)
 
-	d, err := zfs.DatasetCreate(TSTPoolName+"/original",
-		zfs.DatasetTypeFilesystem, make(map[zfs.Prop]zfs.Property))
+	d, err := DatasetCreate(TSTPoolName+"/original",
+		DatasetTypeFilesystem, make(map[Prop]Property))
 	if err != nil {
 		t.Errorf("DatasetCreate(\"%s/original\") error: %v", TSTPoolName, err)
 		return
 	}
 
-	s1, _ := zfs.DatasetSnapshot(d.Properties[zfs.DatasetPropName].Value+"@snap2", false, props)
-	s2, _ := zfs.DatasetSnapshot(d.Properties[zfs.DatasetPropName].Value+"@snap1", false, props)
+	s1, _ := DatasetSnapshot(d.Properties[DatasetPropName].Value+"@snap2", false, props)
+	s2, _ := DatasetSnapshot(d.Properties[DatasetPropName].Value+"@snap1", false, props)
 
 	c1, err = s1.Clone(TSTPoolName+"/clone1", nil)
 	if err != nil {
@@ -30,7 +28,7 @@ func TestDataset_DestroyPromote(t *testing.T) {
 		return
 	}
 
-	zfs.DatasetSnapshot(c1.Properties[zfs.DatasetPropName].Value+"@snap1", false, props)
+	DatasetSnapshot(c1.Properties[DatasetPropName].Value+"@snap1", false, props)
 
 	c2, err = s2.Clone(TSTPoolName+"/clone2", nil)
 	if err != nil {
@@ -41,14 +39,14 @@ func TestDataset_DestroyPromote(t *testing.T) {
 	}
 	s2.Close()
 
-	zfs.DatasetSnapshot(c2.Properties[zfs.DatasetPropName].Value+"@snap0", false, props)
+	DatasetSnapshot(c2.Properties[DatasetPropName].Value+"@snap0", false, props)
 	c1.Close()
 	c2.Close()
 
 	// reopen pool
 	d.Close()
-	if d, err = zfs.DatasetOpen(TSTPoolName + "/original"); err != nil {
-		t.Error("zfs.DatasetOpen")
+	if d, err = DatasetOpen(TSTPoolName + "/original"); err != nil {
+		t.Error("DatasetOpen")
 		return
 	}
 
@@ -59,5 +57,5 @@ func TestDataset_DestroyPromote(t *testing.T) {
 	}
 	t.Log("Destroy promote completed with success")
 	d.Close()
-	zpoolTestPoolDestroy(t)
+	TestPoolDestroy(t)
 }

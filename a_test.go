@@ -1,4 +1,4 @@
-package zfs_test
+package zfs
 
 import (
 	"testing"
@@ -8,28 +8,28 @@ import (
 // TESTS ARE DEPENDED AND MUST RUN IN DEPENDENT ORDER
 
 func Test(t *testing.T) {
-	zpoolTestPoolCreate(t)
-	zpoolTestPoolVDevTree(t)
-	zpoolTestExport(t)
-	zpoolTestPoolImportSearch(t)
-	zpoolTestImport(t)
-	zpoolTestExportForce(t)
-	zpoolTestImportByGUID(t)
-	zpoolTestPoolProp(t)
-	zpoolTestPoolStatusAndState(t)
-	zpoolTestPoolOpenAll(t)
-	zpoolTestFailPoolOpen(t)
+	TestPoolCreate(t)
+	TestPoolVDevTree(t)
+	TestExport(t)
+	TestPoolImportSearch(t)
+	TestImport(t)
+	TestExportForce(t)
+	TestImportByGUID(t)
+	TestPoolProp(t)
+	TestPoolStatusAndState(t)
+	TestPoolOpenAll(t)
+	TestFailPoolOpen(t)
 
-	zfsTestDatasetCreate(t)
-	zfsTestDatasetOpen(t)
-	zfsTestDatasetSnapshot(t)
-	zfsTestDatasetOpenAll(t)
-	zfsTestDatasetSetProperty(t)
-	zfsTestDatasetHoldRelease(t)
+	TestDatasetCreate(t)
+	TestDatasetOpen(t)
+	TestDatasetSnapshot(t)
+	TestDatasetOpenAll(t)
+	TestDatasetSetProperty(t)
+	TestDatasetHoldRelease(t)
 
-	zfsTestDatasetDestroy(t)
+	TestDatasetDestroy(t)
 
-	zpoolTestPoolDestroy(t)
+	TestPoolDestroy(t)
 
-	cleanupVDisks()
+	CleanupVDisks()
 }

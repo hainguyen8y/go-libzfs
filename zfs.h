@@ -142,5 +142,8 @@ recvflags_t *alloc_recvflags();
 struct zfs_cmd *new_zfs_cmd();
 int estimate_send_size(struct zfs_cmd *zc);
 
+extern int gozfs_send_one(zfs_handle_t *, const char *, int, sendflags_t *,
+    const char *);
+
 #endif
 /* SERVERWARE_ZFS_H */

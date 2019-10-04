@@ -2,10 +2,6 @@
  * using libzfs from go language, make go code shorter and more readable.
  */
 
-#if LIBZFS_VERSION_MINOR == 7
-#include "zpool_7.h"
-#endif
-
 #ifndef __ZPOOL_H__
 #define __ZPOOL_H__
 
@@ -15,7 +11,7 @@
 #define	ZPOOL_TRY_REWIND	4  /* Search for best txg, but do not rewind */
 #define	ZPOOL_DO_REWIND		8  /* Rewind to best txg w/in deferred frees */
 #define	ZPOOL_EXTREME_REWIND	16 /* Allow extreme measures to find best txg */
-#define	ZPOOL_REWIND_MASK		28 /* All the possible rewind bits */
+#define	ZPOOL_REWIND_MASK	28 /* All the possible rewind bits */
 #define	ZPOOL_REWIND_POLICIES	31 /* All the possible policy bits */
 
 struct zpool_list {
@@ -154,8 +150,8 @@ extern char *sZPOOL_CONFIG_REMOVED;
 extern char *sZPOOL_CONFIG_FRU;
 extern char *sZPOOL_CONFIG_AUX_STATE;
 extern char *sZPOOL_REWIND_POLICY;
-extern char *sZPOOL_LOAD_REWIND_POLICY;
-extern char *sZPOOL_LOAD_REQUEST_TXG;
+extern char *sZPOOL_REWIND_REQUEST;
+extern char *sZPOOL_REWIND_REQUEST_TXG;
 extern char *sZPOOL_REWIND_META_THRESH;
 extern char *sZPOOL_REWIND_DATA_THRESH;
 extern char *sZPOOL_CONFIG_LOAD_TIME;
@@ -164,4 +160,4 @@ extern char *sZPOOL_CONFIG_REWIND_TIME;
 
 
 #endif
-/* __ZPOOL_H__ */
+/* __ZPOOL_7_H__ */

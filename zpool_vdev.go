@@ -23,9 +23,7 @@ func (pool *Pool) Online(expand bool, devs ...string) (err error) {
 		var newstate VDevState
 		if newstate = VDevState(C.set_zpool_vdev_online(pool.list, csdev, cflags)); newstate != VDevStateUnknown {
 			if newstate != VDevStateHealthy {
-				err = fmt.Errorf(
-					"Device '%s' onlined, but remains in faulted state",
-					dev)
+				err = NewError(int(EUndefined), fmt.Sprintf("Device '%s' onlined, but remains in faulted state", dev))
 			}
 		} else {
 			err = LastError()
@@ -55,9 +53,7 @@ func (pool *Pool) offline(temp, force bool, devs ...string) (err error) {
 		var newstate VDevState
 		if newstate = VDevState(C.set_zpool_vdev_offline(pool.list, csdev, booleanT(temp), booleanT(force))); newstate != VDevStateUnknown {
 			if newstate != VDevStateHealthy {
-				err = fmt.Errorf(
-					"Device '%s' offlined, but remains in faulted state",
-					dev)
+				err = NewError(int(EUndefined), fmt.Sprintf( "Device '%s' offlined, but remains in faulted state", dev))
 			}
 		} else {
 			err = LastError()
@@ -74,7 +70,7 @@ func (pool *Pool) Clear(device string) (err error) {
 		csdev = nil
 	}
 	if sc := C.do_zpool_clear(pool.list, csdev, C.ZPOOL_NO_REWIND); sc != 0 {
-		err = fmt.Errorf("Pool clear failed")
+		err = NewError(int(EUndefined), "Pool clear failed")
 	}
 	return
 }
