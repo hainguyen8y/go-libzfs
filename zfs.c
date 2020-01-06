@@ -270,6 +270,7 @@ sendflags_t *alloc_sendflags() {
 
 void sendflags_set_raw(sendflags_t * flags) {
 #if LIBZFS_VERSION_MINOR == 7
+
 #else
 	flags->raw = B_TRUE;
 #endif

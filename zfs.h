@@ -136,7 +136,7 @@ char** alloc_cstrings(int size);
 void strings_setat(char **a, int at, char *v);
 
 sendflags_t *alloc_sendflags();
-void sendflags_set_raw(sendflags_t * flags);
+void sendflags_set_raw(sendflags_t *flags);
 recvflags_t *alloc_recvflags();
 
 
