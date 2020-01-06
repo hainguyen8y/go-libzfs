@@ -267,6 +267,14 @@ sendflags_t *alloc_sendflags() {
 	memset(r, 0, sizeof(sendflags_t));
 	return r;
 }
+
+void sendflags_set_raw(sendflags_t * flags) {
+#if LIBZFS_VERSION_MINOR == 7
+#else
+	flags->raw = B_TRUE;
+#endif
+}
+
 recvflags_t *alloc_recvflags() {
 	recvflags_t *r = malloc(sizeof(recvflags_t));
 	memset(r, 0, sizeof(recvflags_t));

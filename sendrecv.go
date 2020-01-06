@@ -40,6 +40,9 @@ func to_sendflags_t(flags *SendFlags) (cflags *C.sendflags_t) {
 	cflags.largeblock = to_boolean_t(flags.LargeBlock)
 	cflags.embed_data = to_boolean_t(flags.EmbedData)
 	cflags.compress = to_boolean_t(flags.Compress)
+	if flags.Raw {
+		sendflags_set_raw(cflags)
+	}
 	return
 }
 

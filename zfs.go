@@ -51,16 +51,18 @@ type SendFlags struct {
 	Verbose    bool `json:"verbose"`    //-v
 	Replicate  bool `json:"replicate"` 	//-R
 	DoAll      bool	`json:"do_all"`		//-I
-	FromOrigin bool
+	FromOrigin bool	`json:"fromorigin"`
 	Dedup      bool	`json:"dedup"`		//-D
 	Props      bool	`json:"props"`		//-p
 	DryRun     bool `json:"dryrun"`		//-n
 	Parsable   bool
 	Progress   bool
+	LargeBlock bool `json:"large_block"` //-L
 	EmbedData  bool	`json:"embed_data"` //-e
 	Compress   bool	`json:"compress"`	//-c
+	Raw		   bool `json:"raw"`		//--raw
+	Backup     bool `json:"backup"`		//-b
 	Holds	   bool `json:"holds"`		//-h
-	LargeBlock bool `json:"large_block"` //-L
 }
 
 type RecvFlags struct {
@@ -69,11 +71,13 @@ type RecvFlags struct {
 	IsTail      bool	`json:"istail"` 		//-e
 	DryRun      bool	`json:"dryrun"`			//-n
 	Force       bool	`json:"force"`			//-r
-	CanmountOff bool
+	CanmountOff bool	`json:"canmountoff"`
 	Resumable   bool	`json:"resumable"`		//-s
-	ByteSwap    bool
+	ByteSwap    bool	`json:"byteswap"`
 	NoMount     bool	`json:"nomount"`		//-u
+	Holds		bool	`json:"holds"`
 	SkipHolds	bool	`json:"skipholds"`		//-h
+	DoMount		bool	`json:"domount"`
 }
 
 type DatasetIf interface {
