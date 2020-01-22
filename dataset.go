@@ -28,15 +28,15 @@ type DatasetType int32
 
 const (
 	// DatasetTypeFilesystem - file system dataset
-	DatasetTypeFilesystem DatasetType = (1 << 0)
+	DatasetTypeFilesystem DatasetType = C.ZFS_TYPE_FILESYSTEM
 	// DatasetTypeSnapshot - snapshot of dataset
-	DatasetTypeSnapshot = (1 << 1)
+	DatasetTypeSnapshot = C.ZFS_TYPE_SNAPSHOT
 	// DatasetTypeVolume - volume (virtual block device) dataset
-	DatasetTypeVolume = (1 << 2)
+	DatasetTypeVolume = C.ZFS_TYPE_VOLUME
 	// DatasetTypePool - pool dataset
-	DatasetTypePool = (1 << 3)
+	DatasetTypePool = C.ZFS_TYPE_POOL
 	// DatasetTypeBookmark - bookmark dataset
-	DatasetTypeBookmark = (1 << 4)
+	DatasetTypeBookmark = C.ZFS_TYPE_BOOKMARK
 )
 
 // HoldTag - user holds  tags
@@ -58,7 +58,7 @@ func (d *Dataset) openChildren() (err error) {
 	list := C.dataset_list_children(d.list)
 	for list != nil {
 		dataset := Dataset{list: list}
-		dataset.Type = DatasetType(C.dataset_type(d.list))
+		dataset.Type = DatasetType(C.dataset_type(list))
 		dataset.Properties = make(map[Prop]Property)
 		err = dataset.ReloadProperties()
 		if err != nil {

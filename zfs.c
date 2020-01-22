@@ -67,7 +67,7 @@ dataset_list_ptr dataset_next(dataset_list_t *dataset) {
 	return dataset->pnext;
 }
 
-int dataset_type(dataset_list_ptr dataset) {
+zfs_type_t dataset_type(dataset_list_ptr dataset) {
 	return zfs_get_type(dataset->zh);
 }
 

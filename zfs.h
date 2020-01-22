@@ -110,7 +110,7 @@ void dataset_list_free(dataset_list_t *list);
 dataset_list_t* dataset_list_root();
 dataset_list_t* dataset_list_children(dataset_list_t *dataset);
 dataset_list_t *dataset_next(dataset_list_t *dataset);
-int dataset_type(dataset_list_ptr dataset);
+zfs_type_t dataset_type(dataset_list_ptr dataset);
 
 dataset_list_ptr dataset_open(const char *path);
 int dataset_create(const char *path, zfs_type_t type, nvlist_ptr props);
