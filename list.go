@@ -52,7 +52,8 @@ func listChildren(d Dataset, opts ListOptions) (datasets []Dataset, err error) {
 	}
 	var childrenDatasets []Dataset
 	for _, d := range datasets {
-		dts, err := listChildren(d, opts)
+		var dts []Dataset
+		dts, err = listChildren(d, opts)
 		if err == nil {
 			childrenDatasets = append(childrenDatasets, dts...)
 		} else {
@@ -60,7 +61,8 @@ func listChildren(d Dataset, opts ListOptions) (datasets []Dataset, err error) {
 		}
 	}
 	for _, d := range tempDatasets {
-		dts, err := listChildren(d, opts)
+		var dts []Dataset
+		dts, err = listChildren(d, opts)
 		if err == nil {
 			childrenDatasets = append(childrenDatasets, dts...)
 		} else {
@@ -111,7 +113,8 @@ func listRoot(opts ListOptions) (datasets []Dataset, err error) {
 	}
 	var childrenDatasets []Dataset
 	for _, d := range datasets {
-		dts, err := listChildren(d, opts)
+		var dts []Dataset
+		dts, err = listChildren(d, opts)
 		if err == nil {
 			childrenDatasets = append(childrenDatasets, dts...)
 		} else {
@@ -119,7 +122,8 @@ func listRoot(opts ListOptions) (datasets []Dataset, err error) {
 		}
 	}
 	for _, d := range tempDatasets {
-		dts, err := listChildren(d, opts)
+		var dts []Dataset
+		dts, err = listChildren(d, opts)
 		if err == nil {
 			childrenDatasets = append(childrenDatasets, dts...)
 		} else {
@@ -138,7 +142,7 @@ func listPath(path string, opts ListOptions) (datasets []Dataset, err error) {
 	var tempDatasets []Dataset
 	dataset, err := DatasetOpenSingle(path)
 	if err != nil {
-		return
+		return nil, err
 	}
 	if dataset.Type & opts.Types == 0 {
 		if opts.Types == DatasetTypeSnapshot ||  opts.Types == DatasetTypeBookmark {
@@ -162,7 +166,8 @@ func listPath(path string, opts ListOptions) (datasets []Dataset, err error) {
 	}
 	var childrenDatasets []Dataset
 	for _, d := range datasets {
-		dts, err := listChildren(d, opts)
+		var dts []Dataset
+		dts, err = listChildren(d, opts)
 		if err == nil {
 			childrenDatasets = append(childrenDatasets, dts...)
 		} else {
@@ -170,7 +175,8 @@ func listPath(path string, opts ListOptions) (datasets []Dataset, err error) {
 		}
 	}
 	for _, d := range tempDatasets {
-		dts, err := listChildren(d, opts)
+		var dts []Dataset
+		dts, err = listChildren(d, opts)
 		if err == nil {
 			childrenDatasets = append(childrenDatasets, dts...)
 		} else {
@@ -190,9 +196,12 @@ func List(opts ListOptions) (datasets []Dataset, err error) {
 		return listRoot(opts)
 	}
 	for _, path := range opts.Paths {
-		dts, err := listPath(path, opts)
+		var dts []Dataset
+		dts, err = listPath(path, opts)
 		if err == nil {
 			datasets = append(datasets, dts...)
+		} else {
+			break
 		}
 	}
 	return
