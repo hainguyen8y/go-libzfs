@@ -28,7 +28,6 @@ func listChildren(d Dataset, opts ListOptions) (datasets []Dataset, err error) {
 				tempDatasets = append(tempDatasets, dataset)
 			} else {
 				dataset.Close()
-				return
 			}
 		} else {
 			dataset.Properties = make(map[Prop]Property)
@@ -54,19 +53,19 @@ func listChildren(d Dataset, opts ListOptions) (datasets []Dataset, err error) {
 	for _, d := range datasets {
 		var dts []Dataset
 		dts, err = listChildren(d, opts)
-		if err == nil {
-			childrenDatasets = append(childrenDatasets, dts...)
-		} else {
+		if err != nil {
 			break
 		}
+		childrenDatasets = append(childrenDatasets, dts...)
 	}
-	for _, d := range tempDatasets {
-		var dts []Dataset
-		dts, err = listChildren(d, opts)
-		if err == nil {
+	if err == nil {
+		for _, d := range tempDatasets {
+			var dts []Dataset
+			dts, err = listChildren(d, opts)
+			if err != nil {
+				break
+			}
 			childrenDatasets = append(childrenDatasets, dts...)
-		} else {
-			break
 		}
 	}
 	datasets = append(datasets, childrenDatasets...)
@@ -89,7 +88,6 @@ func listRoot(opts ListOptions) (datasets []Dataset, err error) {
 				tempDatasets = append(tempDatasets, dataset)
 			} else {
 				dataset.Close()
-				return
 			}
 		} else {
 			err = dataset.ReloadProperties()
@@ -115,19 +113,19 @@ func listRoot(opts ListOptions) (datasets []Dataset, err error) {
 	for _, d := range datasets {
 		var dts []Dataset
 		dts, err = listChildren(d, opts)
-		if err == nil {
-			childrenDatasets = append(childrenDatasets, dts...)
-		} else {
+		if err != nil {
 			break
 		}
+		childrenDatasets = append(childrenDatasets, dts...)
 	}
-	for _, d := range tempDatasets {
-		var dts []Dataset
-		dts, err = listChildren(d, opts)
-		if err == nil {
+	if err == nil {
+		for _, d := range tempDatasets {
+			var dts []Dataset
+			dts, err = listChildren(d, opts)
+			if err != nil {
+				break
+			}
 			childrenDatasets = append(childrenDatasets, dts...)
-		} else {
-			break
 		}
 	}
 	datasets = append(datasets, childrenDatasets...)
@@ -174,15 +172,18 @@ func listPath(path string, opts ListOptions) (datasets []Dataset, err error) {
 			break
 		}
 	}
-	for _, d := range tempDatasets {
-		var dts []Dataset
-		dts, err = listChildren(d, opts)
-		if err == nil {
-			childrenDatasets = append(childrenDatasets, dts...)
-		} else {
-			break
+	if err == nil {
+		for _, d := range tempDatasets {
+			var dts []Dataset
+			dts, err = listChildren(d, opts)
+			if err == nil {
+				childrenDatasets = append(childrenDatasets, dts...)
+			} else {
+				break
+			}
 		}
 	}
+
 	datasets = append(datasets, childrenDatasets...)
 	if err != nil {
 		DatasetCloseAll(datasets)
