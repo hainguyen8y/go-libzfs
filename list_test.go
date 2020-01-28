@@ -70,6 +70,22 @@ func TestListRoot(t *testing.T) {
 			t.Error("should have snapshot")
 		}
 	})
+	t.Run("list filesystem of pool recursively, depth = 1", func (t *testing.T) {
+		dts, err := List(ListOptions{
+			Types: DatasetTypeFilesystem,
+			Recursive: true,
+			Depth: 1,
+		});
+		if err != nil {
+			t.Error(err)
+			return
+		} else {
+			defer DatasetCloseAll(dts)
+		}
+		if len(dts) == 0 {
+			t.Error("should have snapshot")
+		}
+	})
 	TearDownTest()
 }
 

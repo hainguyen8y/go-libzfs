@@ -19,6 +19,7 @@ type ListOptions struct {
 
 func listChildren(d Dataset, opts ListOptions) (datasets []Dataset, err error) {
 	var tempDatasets []Dataset
+	defer DatasetCloseAll(tempDatasets)
 	list := C.dataset_list_children(d.list)
 	for list != nil {
 		dataset := Dataset{list: list}
@@ -33,6 +34,7 @@ func listChildren(d Dataset, opts ListOptions) (datasets []Dataset, err error) {
 			dataset.Properties = make(map[Prop]Property)
 			err = dataset.ReloadProperties()
 			if err != nil {
+				dataset.Close()
 				DatasetCloseAll(datasets)
 				return
 			}
@@ -40,6 +42,7 @@ func listChildren(d Dataset, opts ListOptions) (datasets []Dataset, err error) {
 		}
 		list = C.dataset_next(list)
 	}
+
 	if !opts.Recursive {
 		return
 	}
@@ -79,6 +82,7 @@ func listChildren(d Dataset, opts ListOptions) (datasets []Dataset, err error) {
 func listRoot(opts ListOptions) (datasets []Dataset, err error) {
 	var tempDatasets []Dataset
 	var dataset Dataset
+	defer DatasetCloseAll(tempDatasets)
 	dataset.list = C.dataset_list_root()
 	// Retrieve all datasets
 	for dataset.list != nil {
@@ -87,11 +91,15 @@ func listRoot(opts ListOptions) (datasets []Dataset, err error) {
 			if opts.Types == DatasetTypeSnapshot ||  opts.Types == DatasetTypeBookmark {
 				tempDatasets = append(tempDatasets, dataset)
 			} else {
-				dataset.Close()
+				tempdataset := dataset
+				dataset.list = C.dataset_next(dataset.list)
+				tempdataset.Close()
+				continue
 			}
 		} else {
 			err = dataset.ReloadProperties()
 			if err != nil {
+				dataset.Close()
 				DatasetCloseAll(datasets)
 				return
 			}
@@ -138,6 +146,7 @@ func listRoot(opts ListOptions) (datasets []Dataset, err error) {
 
 func listPath(path string, opts ListOptions) (datasets []Dataset, err error) {
 	var tempDatasets []Dataset
+	defer DatasetCloseAll(tempDatasets)
 	dataset, err := DatasetOpenSingle(path)
 	if err != nil {
 		return nil, err
@@ -202,6 +211,7 @@ func List(opts ListOptions) (datasets []Dataset, err error) {
 		if err == nil {
 			datasets = append(datasets, dts...)
 		} else {
+			DatasetCloseAll(datasets)
 			break
 		}
 	}
