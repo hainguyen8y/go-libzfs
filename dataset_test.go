@@ -54,7 +54,7 @@ func Test_DatasetOpen(t *testing.T) {
 			t.Fatal(err)
 		}
 		defer dt.Close()
-		var props Properties = dt.Properties
+		var props DatasetProperties = dt.Properties
 		data, err := json.Marshal(&props)
 		if err != nil {
 			t.Fatal(err)

@@ -7,12 +7,12 @@ import(
 
 func TestProperties(t *testing.T) {
 	t.Run("convert to json", func(t *testing.T) {
-		var props = make(Properties)
-		props[DatasetPropName] = Property{
+		var props = make(DatasetProperties)
+		props[DatasetPropName] = PropertyValue{
 			Value: "abc",
 			Source: "-",
 		}
-		props[DatasetPropWritten] = Property{
+		props[DatasetPropWritten] = PropertyValue{
 			Value: "234234",
 		}
 		data, err := json.Marshal(&props)
@@ -23,7 +23,7 @@ func TestProperties(t *testing.T) {
 	})
 	t.Run("parse from json", func(t *testing.T) {
 		data := []byte(`{"name":{"value":"abc","source":"-"},"written":{"value":"234234","source":""}}`)
-		var props = make(Properties)
+		var props = make(DatasetProperties)
 		err := json.Unmarshal(data, &props)
 		if err != nil {
 			t.Fatal(err)
@@ -32,7 +32,7 @@ func TestProperties(t *testing.T) {
 	})
 	t.Run("parse from json, emit a \"source\" field", func(t *testing.T) {
 		data := []byte(`{"name":{"value":"abc","source":"-"},"written":{"value":"234234"}}`)
-		var props = make(Properties)
+		var props = make(DatasetProperties)
 		err := json.Unmarshal(data, &props)
 		if err != nil {
 			t.Fatal(err)
@@ -43,7 +43,7 @@ func TestProperties(t *testing.T) {
 
 func TestDataTypeProp(t *testing.T) {
 	t.Run("marshal", func(t *testing.T){
-		var p Prop = DatasetPropSnapshotCount
+		var p DatasetProp = DatasetPropSnapshotCount
 		data, err := json.Marshal(&p)
 		if err != nil {
 			t.Fatal(err)
@@ -52,7 +52,7 @@ func TestDataTypeProp(t *testing.T) {
 	})
 	t.Run("unmarshal", func(t *testing.T){
 		data := []byte(`"snapshot_count"`)
-		var p Prop
+		var p DatasetProp
 		err := json.Unmarshal(data, &p)
 		if err != nil {
 			t.Fatal(err)

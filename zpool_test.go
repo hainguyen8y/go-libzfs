@@ -96,10 +96,10 @@ func TestPoolCreate(t *testing.T) {
 	vdev.Devices = vdevs
 	vdev.Spares = sdevs
 
-	props := make(map[Prop]string)
-	fsprops := make(map[Prop]string)
+	props := make(map[PoolProp]PropertyValue)
+	fsprops := make(map[DatasetProp]PropertyValue)
 	features := make(map[string]string)
-	fsprops[DatasetPropMountpoint] = "none"
+	fsprops[DatasetPropMountpoint] = PropertyValue{Value: "none"}
 	features["async_destroy"] = FENABLED
 	features["empty_bpobj"] = FENABLED
 	features["lz4_compress"] = FENABLED
@@ -401,7 +401,7 @@ func ExamplePoolOpenAll() {
 
 		// Iterate pool properties and print name, value and source
 		for key, prop := range p.Properties {
-			pkey := Prop(key)
+			pkey := PoolProp(key)
 			if pkey == PoolPropName {
 				continue // Skip name its already printed above
 			}
@@ -442,14 +442,14 @@ func ExamplePoolCreate() {
 	vdev.Spares = sdevs
 
 	// pool properties
-	props := make(map[Prop]string)
+	props := make(map[PoolProp]PropertyValue)
 	// root dataset filesystem properties
-	fsprops := make(map[Prop]string)
+	fsprops := make(map[DatasetProp]PropertyValue)
 	// pool features
 	features := make(map[string]string)
 
 	// Turn off auto mounting by ZFS
-	fsprops[DatasetPropMountpoint] = "none"
+	fsprops[DatasetPropMountpoint] = PropertyValue{Value: "none"}
 
 	// Enable some features
 	features["async_destroy"] = "enabled"

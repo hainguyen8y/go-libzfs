@@ -147,7 +147,7 @@ func (d *Dataset) Send(outf *os.File, flags SendFlags) (err error) {
 }
 
 func (d *Dataset) SendFrom(FromName string, outf *os.File, flags SendFlags) (err error) {
-	var porigin Property
+	var porigin PropertyValue
 	var from, dest []string
 	if err = d.ReloadProperties(); err != nil {
 		return

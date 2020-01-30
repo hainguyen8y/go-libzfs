@@ -9,10 +9,10 @@ func TestDataset_DestroyPromote(t *testing.T) {
 	// defer TestPoolDestroy(t)
 	var c1, c2 Dataset
 
-	props := make(map[Prop]Property)
+	props := make(map[DatasetProp]PropertyValue)
 
 	d, err := DatasetCreate(TSTPoolName+"/original",
-		DatasetTypeFilesystem, make(map[Prop]Property))
+		DatasetTypeFilesystem, make(map[DatasetProp]PropertyValue))
 	if err != nil {
 		t.Errorf("DatasetCreate(\"%s/original\") error: %v", TSTPoolName, err)
 		return

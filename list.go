@@ -31,7 +31,7 @@ func listChildren(d Dataset, opts ListOptions) (datasets []Dataset, err error) {
 				dataset.Close()
 			}
 		} else {
-			dataset.Properties = make(map[Prop]Property)
+			dataset.Properties = make(map[DatasetProp]PropertyValue)
 			err = dataset.ReloadProperties()
 			if err != nil {
 				dataset.Close()

@@ -48,8 +48,8 @@ const (
 )
 
 // Prop type to enumerate all different properties suppoerted by ZFS
-type Prop int
-
+type DatasetProp int
+type PoolProp    int
 // PoolStatus type representing status of the pool
 type PoolStatus int
 
@@ -63,7 +63,7 @@ type VDevState uint64
 type VDevAux uint64
 
 // Property ZFS pool or dataset property value
-type Property struct {
+type PropertyValue struct {
 	Value  string	`json:"value"`
 	Source string	`json:"source"`
 }
@@ -146,7 +146,7 @@ const (
 // Pool properties. Enumerates available ZFS pool properties. Use it to access
 // pool properties either to read or set soecific property.
 const (
-	PoolPropCont Prop = iota - 2
+	PoolPropCont PoolProp = iota - 2
 	PoolPropInval
 	PoolPropName
 	PoolPropSize
@@ -187,7 +187,7 @@ const (
  * the property table in module/zcommon/zfs_prop.c.
  */
 const (
-	DatasetPropCont Prop = iota - 2
+	DatasetPropCont DatasetProp = iota - 2
 	DatasetPropBad
 	DatasetPropType
 	DatasetPropCreation

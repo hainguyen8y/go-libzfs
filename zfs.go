@@ -10,7 +10,7 @@ type Version struct {
     Patch 		int
 }
 
-type Properties map[Prop]Property
+type Properties map[DatasetProp]PropertyValue
 
 type DestroyFlags struct {
 	IsChildrenRecursive		bool //-r
@@ -39,8 +39,8 @@ type ListFlags struct {
 	IsRecursive				bool 		`json:"recursive"`	//-p
 	Depth					int  		`json:"depth"`		//-d
 	Types					[]DatasetType 	`json:"types"`		//-t
-	SortProperties			[]Prop	`json:"sort"`		//-s
-	SortPropertiesDesc		[]Prop	`json:"sort-desc"`	//-S
+	SortProperties			[]DatasetProp	`json:"sort"`		//-s
+	SortPropertiesDesc		[]DatasetProp	`json:"sort-desc"`	//-S
 	Paths					[]string	`json:"paths"`
 }
 
@@ -89,14 +89,14 @@ type DatasetIf interface {
 	Path() string
 	LibraryVersion() (*Version, error)
 	KernelModuleVersion() (*Version, error)
-	Create(*CreateFlags, map[Prop]Property) (DatasetIf, error)
+	Create(*CreateFlags, map[DatasetProp]PropertyValue) (DatasetIf, error)
 	Destroy(*DestroyFlags) (error)
-	CreateSnapshot(recursive bool, properties map[Prop]Property) ([]DatasetIf, error)
+	CreateSnapshot(recursive bool, properties map[DatasetProp]PropertyValue) ([]DatasetIf, error)
 	Rollback(*RollbackFlags) (error)
-	Clone(map[Prop]Property) ([]DatasetIf, error)
+	Clone(map[DatasetProp]PropertyValue) ([]DatasetIf, error)
 	Rename() (error)
 	List(*ListFlags) ([]DatasetIf, error)
-	Properties() (map[Prop]Property, error)
+	Properties() (map[DatasetProp]PropertyValue, error)
 	Mount(*MountFlags) (error)
 	Umount(force, isAll bool) (error)
 	SendFrom(from string, outf *os.File, flags SendFlags) (error)

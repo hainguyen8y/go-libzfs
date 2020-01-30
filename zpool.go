@@ -27,7 +27,7 @@ const (
 )
 
 // PoolProperties type is map of pool properties name -> value
-type PoolProperties map[Prop]string
+type PoolProperties map[PoolProp]PropertyValue
 
 /*
  * ZIO types.  Needed to interpret vdev statistics below.
@@ -124,7 +124,7 @@ type ExportedPool struct {
 
 // Pool object represents handler to single ZFS pool
 //
-/* Pool.Properties map[string]Property
+/* Pool.Properties map[string]PropertyValue
  */
 // Map of all ZFS pool properties, changing any of this will not affect ZFS
 // pool, for that use SetProperty( name, value string) method of the pool
@@ -133,7 +133,7 @@ type ExportedPool struct {
 // with up to date values with call to (*Pool) ReloadProperties
 type Pool struct {
 	list       C.zpool_list_ptr
-	Properties []Property
+	Properties map[PoolProp]PropertyValue
 	Features   map[string]string
 }
 
@@ -479,7 +479,7 @@ func PoolCloseAll(pools []Pool) {
 // ( returns built in string representation of property name).
 // This is optional, you can represent each property with string
 // name of choice.
-func PoolPropertyToName(p Prop) (name string) {
+func PoolPropertyToName(p PoolProp) (name string) {
 	if p == PoolNumProps {
 		return "numofprops"
 	}
@@ -512,11 +512,11 @@ func (pool *Pool) ReloadProperties() (err error) {
 		return
 	}
 
-	pool.Properties = make([]Property, PoolNumProps+1)
+	pool.Properties = make(map[PoolProp]PropertyValue)
 	next := propList
 	for next != nil {
 		if int(next.property) < int(PoolNumProps) {
-			pool.Properties[next.property] = Property{Value: C.GoString(&(next.value[0])), Source: C.GoString(&(next.source[0]))}
+			pool.Properties[PoolProp(next.property)] = PropertyValue{Value: C.GoString(&(next.value[0])), Source: C.GoString(&(next.source[0]))}
 		}
 		next = C.next_property(next)
 	}
@@ -546,7 +546,7 @@ func (pool *Pool) ReloadProperties() (err error) {
 
 // GetProperty reload and return single specified property. This also reloads requested
 // property in Properties map.
-func (pool *Pool) GetProperty(p Prop) (prop Property, err error) {
+func (pool *Pool) GetProperty(p PoolProp) (prop PropertyValue, err error) {
 	if pool.list != nil {
 		// First check if property exist at all
 		if p < PoolPropName || p > PoolNumProps {
@@ -587,7 +587,7 @@ func (pool *Pool) GetFeature(name string) (value string, err error) {
 // SetProperty set ZFS pool property to value. Not all properties can be set,
 // some can be set only at creation time and some are read only.
 // Always check if returned error and its description.
-func (pool *Pool) SetProperty(p Prop, value string) (err error) {
+func (pool *Pool) SetProperty(p PoolProp, value string) (err error) {
 	if pool.list != nil {
 		// First check if property exist at all
 		if p < PoolPropName || p > PoolNumProps {
@@ -628,7 +628,7 @@ func (pool *Pool) Name() (name string, err error) {
 		err = errors.New(msgPoolIsNil)
 	} else {
 		name = C.GoString(C.zpool_get_name(pool.list.zph))
-		pool.Properties[PoolPropName] = Property{Value: name, Source: "none"}
+		pool.Properties[PoolPropName] = PropertyValue{Value: name, Source: "none"}
 	}
 	return
 }
@@ -678,7 +678,7 @@ func toCPoolProperties(props PoolProperties) (cprops C.nvlist_ptr) {
 	cprops = C.new_property_nvlist()
 	for prop, value := range props {
 		name := C.zpool_prop_to_name(C.zpool_prop_t(prop))
-		csPropValue := C.CString(value)
+		csPropValue := C.CString(value.Value)
 		r := C.property_nvlist_add(cprops, name, csPropValue)
 		C.free(unsafe.Pointer(csPropValue))
 		if r != 0 {
@@ -696,7 +696,7 @@ func toCDatasetProperties(props DatasetProperties) (cprops C.nvlist_ptr) {
 	cprops = C.new_property_nvlist()
 	for prop, value := range props {
 		name := C.zfs_prop_to_name(C.zfs_prop_t(prop))
-		csPropValue := C.CString(value)
+		csPropValue := C.CString(value.Value)
 		r := C.property_nvlist_add(cprops, name, csPropValue)
 		C.free(unsafe.Pointer(csPropValue))
 		if r != 0 {
@@ -804,7 +804,7 @@ func buildVDevTree(root *C.nvlist_t, rtype VDevType, vdevs, spares, l2cache []VD
 				return
 			}
 		} else {
-			ashift, _ := strconv.Atoi(props[PoolPropAshift])
+			ashift, _ := strconv.Atoi(props[PoolPropAshift].Value)
 			if child, err = buildVdev(vdev, ashift); err != nil {
 				return
 			}
@@ -820,13 +820,13 @@ func buildVDevTree(root *C.nvlist_t, rtype VDevType, vdevs, spares, l2cache []VD
 		}
 	}
 	if len(spares) > 0 {
-		ashift, _ := strconv.Atoi(props[PoolPropAshift])
+		ashift, _ := strconv.Atoi(props[PoolPropAshift].Value)
 		if err = buildVdevSpares(root, VDevTypeRoot, spares, ashift); err != nil {
 			return
 		}
 	}
 	if len(l2cache) > 0 {
-		ashift, _ := strconv.Atoi(props[PoolPropAshift])
+		ashift, _ := strconv.Atoi(props[PoolPropAshift].Value)
 		if err = buildVdevL2Cache(root, VDevTypeRoot, l2cache, ashift); err != nil {
 			return
 		}

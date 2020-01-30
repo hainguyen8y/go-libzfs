@@ -2,6 +2,7 @@ package zfs
 
 import (
 	"testing"
+	"encoding/json"
 )
 
 func Test_PoolOpen(t *testing.T) {
@@ -20,6 +21,12 @@ func Test_PoolProperties(t *testing.T) {
 			t.Fatal(err)
 		}
 		t.Log(pool.Properties)
+		var props PoolProperties = pool.Properties
+		data, err := json.Marshal(&props)
+		if err != nil {
+			t.Fatal(err)
+		}
+		t.Log(string(data))
 		pool.Close()
 	})
 }

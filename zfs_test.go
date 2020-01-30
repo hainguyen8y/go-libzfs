@@ -40,7 +40,7 @@ func TestDatasetCreate(t *testing.T) {
 	TSTDatasetPathSnap = TSTDatasetPath + "@test"
 
 	println("TEST DatasetCreate(", TSTDatasetPath, ") (filesystem) ... ")
-	props := make(map[Prop]Property)
+	props := make(map[DatasetProp]PropertyValue)
 	d, err := DatasetCreate(TSTDatasetPath, DatasetTypeFilesystem, props)
 	if err != nil {
 		t.Error(err)
@@ -52,10 +52,10 @@ func TestDatasetCreate(t *testing.T) {
 	strSize := "536870912" // 512M
 
 	println("TEST DatasetCreate(", TSTVolumePath, ") (volume) ... ")
-	props[DatasetPropVolsize] = Property{Value: strSize}
+	props[DatasetPropVolsize] = PropertyValue{Value: strSize}
 	// In addition I explicitly choose some more properties to be set.
-	props[DatasetPropVolblocksize] = Property{Value: "4096"}
-	props[DatasetPropReservation] = Property{Value: strSize}
+	props[DatasetPropVolblocksize] = PropertyValue{Value: "4096"}
+	props[DatasetPropReservation] = PropertyValue{Value: strSize}
 	d, err = DatasetCreate(TSTVolumePath, DatasetTypeVolume, props)
 	if err != nil {
 		t.Error(err)
@@ -76,7 +76,7 @@ func TestDatasetOpen(t *testing.T) {
 	print("PASS\n\n")
 
 	println("TEST Set/GetUserProperty(prop, value string) ... ")
-	var p Property
+	var p PropertyValue
 	// Test set/get user property
 	if err = d.SetUserProperty("go-libzfs:test", "yes"); err != nil {
 		t.Error(err)
@@ -135,7 +135,7 @@ func TestDatasetOpenAll(t *testing.T) {
 
 func TestDatasetSnapshot(t *testing.T) {
 	println("TEST DatasetSnapshot(", TSTDatasetPath, ", true, ...) ... ")
-	props := make(map[Prop]Property)
+	props := make(map[DatasetProp]PropertyValue)
 	d, err := DatasetSnapshot(TSTDatasetPathSnap, true, props)
 	if err != nil {
 		t.Error(err)
@@ -228,7 +228,7 @@ func ExampleDatasetCreate() {
 	// Create map to represent ZFS dataset properties. This is equivalent to
 	// list of properties you can get from ZFS CLI tool, and some more
 	// internally used by lib
-	props := make(map[Prop]Property)
+	props := make(map[DatasetProp]PropertyValue)
 
 	// I choose to create (block) volume 1GiB in size. Size is just ZFS dataset
 	// property and this is done as map of strings. So, You have to either
@@ -236,10 +236,10 @@ func ExampleDatasetCreate() {
 	// similar to convert in to string (base 10) from numeric type.
 	strSize := "1073741824"
 
-	props[DatasetPropVolsize] = Property{Value: strSize}
+	props[DatasetPropVolsize] = PropertyValue{Value: strSize}
 	// In addition I explicitly choose some more properties to be set.
-	props[DatasetPropVolblocksize] = Property{Value: "4096"}
-	props[DatasetPropReservation] = Property{Value: strSize}
+	props[DatasetPropVolblocksize] = PropertyValue{Value: "4096"}
+	props[DatasetPropReservation] = PropertyValue{Value: strSize}
 
 	// Lets create desired volume
 	d, err := DatasetCreate("TESTPOOL/VOLUME1", DatasetTypeVolume, props)
@@ -260,7 +260,7 @@ func ExampleDatasetOpen() {
 		panic(err.Error())
 	}
 	defer d.Close()
-	var p Property
+	var p PropertyValue
 	if p, err = d.GetProperty(DatasetPropAvailable); err != nil {
 		panic(err.Error())
 	}
