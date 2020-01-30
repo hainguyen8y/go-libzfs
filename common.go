@@ -64,8 +64,8 @@ type VDevAux uint64
 
 // Property ZFS pool or dataset property value
 type Property struct {
-	Value  string
-	Source string
+	Value  string	`json:"value"`
+	Source string	`json:"source"`
 }
 
 var Global struct {

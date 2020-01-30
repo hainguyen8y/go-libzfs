@@ -12,7 +12,9 @@ import (
 	"path"
 	"sort"
 	"strings"
+	"encoding/json"
 	"time"
+	"bytes"
 	"unsafe"
 )
 
@@ -38,6 +40,47 @@ const (
 	// DatasetTypeBookmark - bookmark dataset
 	DatasetTypeBookmark = C.ZFS_TYPE_BOOKMARK
 )
+
+var stringToDatasetType = make(map[string]DatasetType)
+
+func init() {
+	types := [...]DatasetType{
+		DatasetTypeFilesystem,
+		DatasetTypeSnapshot,
+		DatasetTypeVolume,
+		DatasetTypePool,
+		DatasetTypeBookmark,
+	}
+
+	for _, t := range types {
+		stringToDatasetType[t.String()] = t
+	}
+}
+
+func (t *DatasetType) String() string {
+	return C.GoString(C.zfs_type_to_name((C.zfs_type_t)(*t)))
+}
+
+func (t *DatasetType) MarshalJSON() ([]byte, error) {
+	buffer := bytes.NewBufferString(`"`)
+	buffer.WriteString(t.String())
+	buffer.WriteString(`"`)
+	return buffer.Bytes(), nil
+}
+
+func (t *DatasetType) UnmarshalJSON(b []byte) error {
+	var j string
+	err := json.Unmarshal(b, &j)
+	if err != nil {
+		return err
+	}
+	dstype, ok := stringToDatasetType[j]
+	if !ok {
+		return fmt.Errorf("type \"%s\" not exists", j)
+	}
+	*t = dstype
+	return err
+}
 
 // HoldTag - user holds  tags
 type HoldTag struct {
@@ -319,6 +362,7 @@ func (d *Dataset) ReloadProperties() (err error) {
 	d.Properties = make(map[Prop]Property)
 	Global.Mtx.Lock()
 	defer Global.Mtx.Unlock()
+
 	for prop := DatasetPropType; prop < DatasetNumProps; prop++ {
 		plist := C.read_dataset_property(d.list, C.int(prop))
 		if plist == nil {

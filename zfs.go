@@ -10,6 +10,8 @@ type Version struct {
     Patch 		int
 }
 
+type Properties map[Prop]Property
+
 type DestroyFlags struct {
 	IsChildrenRecursive		bool //-r
 	IsDependentRecursive	bool //-R
@@ -36,14 +38,15 @@ type CloneFlags struct {
 type ListFlags struct {
 	IsRecursive				bool 		`json:"recursive"`	//-p
 	Depth					int  		`json:"depth"`		//-d
-	Types					[]string 	`json:"types"`		//-t
-	SortProperties			[]Property  `json:"sort"`		//-s
-	SortPropertiesDesc		[]Property  `json:"sort-desc"`	//-S
+	Types					[]DatasetType 	`json:"types"`		//-t
+	SortProperties			[]Prop	`json:"sort"`		//-s
+	SortPropertiesDesc		[]Prop	`json:"sort-desc"`	//-S
+	Paths					[]string	`json:"paths"`
 }
 
 type MountFlags struct {
 	IsOverlay				bool		`json:"is_overlay"`	//-O
-	OptionalProperties		[]Property	`json:"properties"`	//-o
+	OptionalProperties		[]string	`json:"properties"`	//-o
 	IsAll					bool		`json:"is_all"`		//-a
 }
 
@@ -81,18 +84,19 @@ type RecvFlags struct {
 }
 
 type DatasetIf interface {
-	Init(path string) (error)
-	Deinit() (error)
+	Open(path string) (error)
+	Close() (error)
+	Path() string
 	LibraryVersion() (*Version, error)
 	KernelModuleVersion() (*Version, error)
-	Create(*CreateFlags, []Property) (DatasetIf, error)
+	Create(*CreateFlags, map[Prop]Property) (DatasetIf, error)
 	Destroy(*DestroyFlags) (error)
-	CreateSnapshot(recursive bool, properties []Property) ([]DatasetIf, error)
+	CreateSnapshot(recursive bool, properties map[Prop]Property) ([]DatasetIf, error)
 	Rollback(*RollbackFlags) (error)
-	Clone([]Property) ([]DatasetIf, error)
+	Clone(map[Prop]Property) ([]DatasetIf, error)
 	Rename() (error)
 	List(*ListFlags) ([]DatasetIf, error)
-	Properties([]Property) ([]Property, error)
+	Properties() (map[Prop]Property, error)
 	Mount(*MountFlags) (error)
 	Umount(force, isAll bool) (error)
 	SendFrom(from string, outf *os.File, flags SendFlags) (error)
