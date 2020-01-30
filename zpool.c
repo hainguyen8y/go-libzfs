@@ -229,39 +229,9 @@ property_list_t *read_zpool_properties(zpool_list_ptr pool) {
 	// read pool name as first property
 	property_list_t *root = NULL, *list = NULL;
 
-	root = read_append_zpool_property(pool, root, ZPOOL_PROP_NAME);
-	root = read_append_zpool_property(pool, root, ZPOOL_PROP_SIZE);
-	root = read_append_zpool_property(pool, root, ZPOOL_PROP_CAPACITY);
-	root = read_append_zpool_property(pool, root, ZPOOL_PROP_ALTROOT);
-	root = read_append_zpool_property(pool, root, ZPOOL_PROP_HEALTH);
-	root = read_append_zpool_property(pool, root, ZPOOL_PROP_GUID);
-	root = read_append_zpool_property(pool, root, ZPOOL_PROP_VERSION);
-	root = read_append_zpool_property(pool, root, ZPOOL_PROP_BOOTFS);
-	root = read_append_zpool_property(pool, root, ZPOOL_PROP_DELEGATION);
-	root = read_append_zpool_property(pool, root, ZPOOL_PROP_AUTOREPLACE);
-	root = read_append_zpool_property(pool, root, ZPOOL_PROP_CACHEFILE);
-	root = read_append_zpool_property(pool, root, ZPOOL_PROP_FAILUREMODE);
-	root = read_append_zpool_property(pool, root, ZPOOL_PROP_LISTSNAPS);
-	root = read_append_zpool_property(pool, root, ZPOOL_PROP_AUTOEXPAND);
-	root = read_append_zpool_property(pool, root, ZPOOL_PROP_DEDUPDITTO);
-	root = read_append_zpool_property(pool, root, ZPOOL_PROP_DEDUPRATIO);
-	root = read_append_zpool_property(pool, root, ZPOOL_PROP_FREE);
-	root = read_append_zpool_property(pool, root, ZPOOL_PROP_ALLOCATED);
-	root = read_append_zpool_property(pool, root, ZPOOL_PROP_READONLY);
-	root = read_append_zpool_property(pool, root, ZPOOL_PROP_ASHIFT);
-	root = read_append_zpool_property(pool, root, ZPOOL_PROP_COMMENT);
-	root = read_append_zpool_property(pool, root, ZPOOL_PROP_EXPANDSZ);
-	root = read_append_zpool_property(pool, root, ZPOOL_PROP_FREEING);
-
-
-
-	list = new_property_list();
-	list->property = ZPOOL_NUM_PROPS;
-	sprintf(list->value, "%d", ZPOOL_NUM_PROPS);
-	list->pnext = root;
-	zprop_source_tostr(list->source, ZPROP_SRC_NONE);
-	root = list;
-
+	for (zpool_prop_t prop = ZPOOL_PROP_NAME; prop < ZPOOL_NUM_PROPS; prop++) {
+		root = read_append_zpool_property(pool, root, prop);
+	}
 	// printf("Finished properties reading.\n");
 	return root;
 }
@@ -269,7 +239,6 @@ property_list_t *read_zpool_properties(zpool_list_ptr pool) {
 pool_state_t zpool_read_state(zpool_handle_t *zh) {
 	return zpool_get_state(zh);
 }
-
 
 const char *gettext(const char *txt) {
 	return txt;

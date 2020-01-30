@@ -523,19 +523,8 @@ func (pool *Pool) ReloadProperties() (err error) {
 	C.free_properties(propList)
 
 	// read features
-	pool.Features = map[string]string{
-		"async_destroy":      "disabled",
-		"empty_bpobj":        "disabled",
-		"lz4_compress":       "disabled",
-		"spacemap_histogram": "disabled",
-		"enabled_txg":        "disabled",
-		"hole_birth":         "disabled",
-		"extensible_dataset": "disabled",
-		"embedded_data":      "disabled",
-		"bookmarks":          "disabled",
-		"filesystem_limits":  "disabled",
-		"large_blocks":       "disabled"}
-	for name := range pool.Features {
+	pool.Features = make(map[string]string)
+	for _, name := range featuresTable {
 		_, ferr := pool.GetFeature(name)
 		if ferr != nil {
 			// tolerate it
@@ -909,22 +898,22 @@ func PoolCreate(name string, vdev VDevTree, features map[string]string,
 	}
 
 	// Enable 0.6.5 features per default
-	features["spacemap_histogram"] = FENABLED
-	features["enabled_txg"] = FENABLED
-	features["hole_birth"] = FENABLED
-	features["extensible_dataset"] = FENABLED
-	features["embedded_data"] = FENABLED
-	features["bookmarks"] = FENABLED
-	features["filesystem_limits"] = FENABLED
-	features["large_blocks"] = FENABLED
+	features[ZFEATURE_STR_SPACEMAP_HISTOGRAM] = FENABLED
+	features[ZFEATURE_STR_ENABLED_TXG] = FENABLED
+	features[ZFEATURE_STR_HOLE_BIRTH] = FENABLED
+	features[ZFEATURE_STR_EXTENSIBLE_DATASET] = FENABLED
+	features[ZFEATURE_STR_EMBEDDED_DATA] = FENABLED
+	features[ZFEATURE_STR_BOOKMARKS] = FENABLED
+	features[ZFEATURE_STR_FILESYSTEM_LIMITS] = FENABLED
+	features[ZFEATURE_STR_LARGE_BLOCKS] = FENABLED
 
 	// Enable 0.7.x features per default
-	features["multi_vdev_crash_dump"] = FENABLED
-	features["large_dnode"] = FENABLED
-	features["sha512"] = FENABLED
-	features["skein"] = FENABLED
-	features["edonr"] = FENABLED
-	features["userobj_accounting"] = FENABLED
+	features[ZFEATURE_STR_MULTI_VDEV_CRASH_DUMP] = FENABLED
+	features[ZFEATURE_STR_LARGE_DNODE] = FENABLED
+	features[ZFEATURE_STR_SHA512] = FENABLED
+	features[ZFEATURE_STR_SKEIN] = FENABLED
+	features[ZFEATURE_STR_EDONR] = FENABLED
+	features[ZFEATURE_STR_USEROBJ_ACCOUNTING] = FENABLED
 
 	// convert properties
 	cprops := toCPoolProperties(props)
