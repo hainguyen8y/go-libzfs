@@ -11,6 +11,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
+	"time"
 )
 
 var stringToDatasetPropDic = make(map[string]DatasetProp)
@@ -82,6 +83,10 @@ func (p *DatasetProperties) MarshalJSON() ([]byte, error) {
 	for prop, value := range *p {
 		name := prop.String()
 		if maxUint64 != value.Value && value.Value != "none" {
+			if prop == DatasetPropCreation {
+				time_int, _ := strconv.ParseInt(value.Value, 10, 64)
+				value.Value = time.Unix(time_int, 0).Format("2006-01-02T15:04:05-0700")
+			}
 			props[name] = value
 		}
 	}
@@ -106,6 +111,14 @@ func (p *DatasetProperties) UnmarshalJSON(b []byte) error {
 		(*p)[prop] = value
 	}
 	return nil
+}
+
+func (p *DatasetProperties) String() string {
+	data, err := json.Marshal(p)
+	if err != nil {
+		return ""
+	}
+	return string(data)
 }
 
 func (p *PoolProperties) MarshalJSON() ([]byte, error) {
@@ -138,4 +151,12 @@ func (p *PoolProperties) UnmarshalJSON(b []byte) error {
 		(*p)[prop] = value
 	}
 	return nil
+}
+
+func (p *PoolProperties) String() string {
+	data, err := json.Marshal(p)
+	if err != nil {
+		return ""
+	}
+	return string(data)
 }

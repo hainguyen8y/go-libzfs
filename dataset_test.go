@@ -48,7 +48,20 @@ func TestDatasetType(t *testing.T) {
 }
 
 func Test_DatasetOpen(t *testing.T) {
-	t.Run("open", func(t *testing.T){
+	t.Run("open dataset", func(t *testing.T){
+		dt, err := DatasetOpenSingle(TESTPOOL+"/tank2/tank1")
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer dt.Close()
+		t.Log(&dt)
+		data, err := json.Marshal(&dt)
+		if err != nil {
+			t.Fatal(err)
+		}
+		t.Log(string(data))
+	})
+	t.Run("get properties of dataset", func(t *testing.T){
 		dt, err := DatasetOpenSingle(TESTPOOL+"/tank2/tank1")
 		if err != nil {
 			t.Fatal(err)

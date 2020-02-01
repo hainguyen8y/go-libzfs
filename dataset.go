@@ -91,9 +91,17 @@ type HoldTag struct {
 // Dataset - ZFS dataset object
 type Dataset struct {
 	list       C.dataset_list_ptr
-	Type       DatasetType
-	Properties map[DatasetProp]PropertyValue
-	Children   []Dataset
+	Type       DatasetType			`json:"type"`
+	Properties DatasetProperties	`json:"properties"`
+	Children   []Dataset			`json:"-"`
+}
+
+func (p *Dataset) String() string {
+	data, err := json.Marshal(p)
+	if err != nil {
+		return ""
+	}
+	return string(data)
 }
 
 func (d *Dataset) openChildren() (err error) {

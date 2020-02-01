@@ -11,6 +11,7 @@ import "C"
 import (
 	"errors"
 	"fmt"
+	"encoding/json"
 	"strconv"
 	"time"
 	"unsafe"
@@ -133,8 +134,16 @@ type ExportedPool struct {
 // with up to date values with call to (*Pool) ReloadProperties
 type Pool struct {
 	list       C.zpool_list_ptr
-	Properties map[PoolProp]PropertyValue
-	Features   map[string]string
+	Properties PoolProperties		`json:"properties"`
+	Features   map[string]string	`json:"features"`
+}
+
+func (p *Pool) String() string {
+	data, err := json.Marshal(p)
+	if err != nil {
+		return ""
+	}
+	return string(data)
 }
 
 // PoolOpen open ZFS pool handler by name.

@@ -15,6 +15,7 @@ func TestProperties(t *testing.T) {
 		props[DatasetPropWritten] = PropertyValue{
 			Value: "234234",
 		}
+		t.Log(&props)
 		data, err := json.Marshal(&props)
 		if err != nil {
 			t.Fatal(err)
@@ -28,7 +29,7 @@ func TestProperties(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		t.Log(props)
+		t.Log(&props)
 	})
 	t.Run("parse from json, emit a \"source\" field", func(t *testing.T) {
 		data := []byte(`{"name":{"value":"abc","source":"-"},"written":{"value":"234234"}}`)
@@ -37,7 +38,7 @@ func TestProperties(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		t.Log(props)
+		t.Log(&props)
 	})
 }
 
