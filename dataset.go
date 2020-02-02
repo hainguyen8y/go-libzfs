@@ -14,7 +14,6 @@ import (
 	"strings"
 	"encoding/json"
 	"time"
-	"bytes"
 	"unsafe"
 )
 
@@ -57,15 +56,13 @@ func init() {
 	}
 }
 
-func (t *DatasetType) String() string {
-	return C.GoString(C.zfs_type_to_name((C.zfs_type_t)(*t)))
+func (t DatasetType) String() string {
+	return C.GoString(C.zfs_type_to_name((C.zfs_type_t)(t)))
 }
 
-func (t *DatasetType) MarshalJSON() ([]byte, error) {
-	buffer := bytes.NewBufferString(`"`)
-	buffer.WriteString(t.String())
-	buffer.WriteString(`"`)
-	return buffer.Bytes(), nil
+func (t DatasetType) MarshalJSON() ([]byte, error) {
+	s := t.String()
+	return json.Marshal(s)
 }
 
 func (t *DatasetType) UnmarshalJSON(b []byte) error {
@@ -91,13 +88,19 @@ type HoldTag struct {
 // Dataset - ZFS dataset object
 type Dataset struct {
 	list       C.dataset_list_ptr
-	Type       DatasetType			`json:"type"`
-	Properties DatasetProperties	`json:"properties"`
+	Type       DatasetType			`json:"type,omitempty"`
+	Properties DatasetProperties	`json:"properties,omitempty"`
 	Children   []Dataset			`json:"-"`
 }
 
-func (p *Dataset) String() string {
-	data, err := json.Marshal(p)
+func NewDataset() (*Dataset) {
+	return &Dataset{
+		Properties: make(DatasetProperties),
+	}
+}
+
+func (p Dataset) String() string {
+	data, err := json.Marshal(&p)
 	if err != nil {
 		return ""
 	}

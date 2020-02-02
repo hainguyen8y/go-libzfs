@@ -134,11 +134,18 @@ type ExportedPool struct {
 // with up to date values with call to (*Pool) ReloadProperties
 type Pool struct {
 	list       C.zpool_list_ptr
-	Properties PoolProperties		`json:"properties"`
-	Features   map[string]string	`json:"features"`
+	Properties PoolProperties		`json:"properties,omitempty"`
+	Features   map[string]string	`json:"features,omitempty"`
 }
 
-func (p *Pool) String() string {
+func NewPool() (*Pool) {
+	return &Pool{
+		Properties: make(PoolProperties),
+		Features: make(map[string]string),
+	}
+}
+
+func (p Pool) String() string {
 	data, err := json.Marshal(p)
 	if err != nil {
 		return ""

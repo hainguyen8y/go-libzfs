@@ -15,8 +15,8 @@ func TestProperties(t *testing.T) {
 		props[DatasetPropWritten] = PropertyValue{
 			Value: "234234",
 		}
-		t.Log(&props)
-		data, err := json.Marshal(&props)
+		t.Log(props)
+		data, err := json.Marshal(props)
 		if err != nil {
 			t.Fatal(err)
 		}

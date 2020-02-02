@@ -5,6 +5,11 @@ import (
 	"encoding/json"
 )
 
+func TestPoolType(t *testing.T) {
+	p := NewPool()
+	t.Log(p)
+}
+
 func Test_PoolOpen(t *testing.T) {
 	pool, err := PoolOpen(TESTPOOL)
 	if err != nil {

@@ -32,7 +32,7 @@ func TestDatasetType(t *testing.T) {
 		if err == nil {
 			t.Fatal("should return not exists")
 		}
-		t.Log(types)
+		t.Log(err)
 	})
 	t.Run("Convert to the json", func (t *testing.T) {
 		types := []DatasetType{DatasetTypeSnapshot, DatasetTypeVolume}
@@ -54,12 +54,13 @@ func Test_DatasetOpen(t *testing.T) {
 			t.Fatal(err)
 		}
 		defer dt.Close()
-		t.Log(&dt)
-		data, err := json.Marshal(&dt)
+		t.Log(dt)
+		data, err := json.Marshal(dt)
 		if err != nil {
 			t.Fatal(err)
 		}
 		t.Log(string(data))
+		t.Log(dt.Type)
 	})
 	t.Run("get properties of dataset", func(t *testing.T){
 		dt, err := DatasetOpenSingle(TESTPOOL+"/tank2/tank1")

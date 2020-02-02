@@ -7,11 +7,11 @@ package zfs
 import "C"
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"strconv"
 	"time"
+	"errors"
 )
 
 var stringToDatasetPropDic = make(map[string]DatasetProp)
@@ -26,15 +26,13 @@ func init() {
 	}
 }
 
-func (p *DatasetProp) String() string {
-	return C.GoString(C.zfs_prop_to_name((C.zfs_prop_t)(*p)))
+func (p DatasetProp) String() string {
+	return C.GoString(C.zfs_prop_to_name((C.zfs_prop_t)(p)))
 }
 
-func (p *DatasetProp) MarshalJSON() ([]byte, error) {
-	buffer := bytes.NewBufferString(`"`)
-	buffer.WriteString(p.String())
-	buffer.WriteString(`"`)
-	return buffer.Bytes(), nil
+func (p DatasetProp) MarshalJSON() ([]byte, error) {
+	s := p.String()
+	return json.Marshal(s)
 }
 
 func (p *DatasetProp) UnmarshalJSON(b []byte) error {
@@ -51,15 +49,13 @@ func (p *DatasetProp) UnmarshalJSON(b []byte) error {
 	return err
 }
 
-func (p *PoolProp) String() string {
-	return C.GoString(C.zpool_prop_to_name((C.zpool_prop_t)(*p)))
+func (p PoolProp) String() string {
+	return C.GoString(C.zpool_prop_to_name((C.zpool_prop_t)(p)))
 }
 
-func (p *PoolProp) MarshalJSON() ([]byte, error) {
-	buffer := bytes.NewBufferString(`"`)
-	buffer.WriteString(p.String())
-	buffer.WriteString(`"`)
-	return buffer.Bytes(), nil
+func (p PoolProp) MarshalJSON() ([]byte, error) {
+	s := p.String()
+	return json.Marshal(s)
 }
 
 func (p *PoolProp) UnmarshalJSON(b []byte) error {
@@ -77,10 +73,10 @@ func (p *PoolProp) UnmarshalJSON(b []byte) error {
 }
 
 //{"guid": {"value":"16859519823695578253", "source":"-"}}
-func (p *DatasetProperties) MarshalJSON() ([]byte, error) {
+func (p DatasetProperties) MarshalJSON() ([]byte, error) {
 	props := make(map[string]PropertyValue)
 	maxUint64 := strconv.FormatUint(C.UINT64_MAX, 10)
-	for prop, value := range *p {
+	for prop, value := range p {
 		name := prop.String()
 		if maxUint64 != value.Value && value.Value != "none" {
 			if prop == DatasetPropCreation {
@@ -90,14 +86,13 @@ func (p *DatasetProperties) MarshalJSON() ([]byte, error) {
 			props[name] = value
 		}
 	}
-	data, err := json.Marshal(&props)
-	if err != nil {
-		return nil, err
-	}
-	return data, nil
+	return json.Marshal(props)
 }
 
 func (p *DatasetProperties) UnmarshalJSON(b []byte) error {
+	if p == nil {
+		return errors.New("map is nil. use make")
+	}
 	props := make(map[string]PropertyValue)
 	err := json.Unmarshal(b, &props)
 	if err != nil {
@@ -113,7 +108,7 @@ func (p *DatasetProperties) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-func (p *DatasetProperties) String() string {
+func (p DatasetProperties) String() string {
 	data, err := json.Marshal(p)
 	if err != nil {
 		return ""
@@ -121,23 +116,22 @@ func (p *DatasetProperties) String() string {
 	return string(data)
 }
 
-func (p *PoolProperties) MarshalJSON() ([]byte, error) {
+func (p PoolProperties) MarshalJSON() ([]byte, error) {
 	props := make(map[string]PropertyValue)
 	maxUint64 := strconv.FormatUint(C.UINT64_MAX, 10)
-	for prop, value := range *p {
+	for prop, value := range p {
 		name := prop.String()
 		if maxUint64 != value.Value && value.Value != "none" {
 			props[name] = value
 		}
 	}
-	data, err := json.Marshal(&props)
-	if err != nil {
-		return nil, err
-	}
-	return data, nil
+	return json.Marshal(props)
 }
 
 func (p *PoolProperties) UnmarshalJSON(b []byte) error {
+	if p == nil {
+		return errors.New("map is nil. use make")
+	}
 	props := make(map[string]PropertyValue)
 	err := json.Unmarshal(b, &props)
 	if err != nil {
@@ -153,7 +147,7 @@ func (p *PoolProperties) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-func (p *PoolProperties) String() string {
+func (p PoolProperties) String() string {
 	data, err := json.Marshal(p)
 	if err != nil {
 		return ""
