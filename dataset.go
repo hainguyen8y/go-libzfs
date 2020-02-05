@@ -374,7 +374,7 @@ func (d *Dataset) ReloadProperties() (err error) {
 	Global.Mtx.Lock()
 	defer Global.Mtx.Unlock()
 
-	for prop := DatasetPropType; prop < DatasetNumProps; prop++ {
+	for prop := DatasetPropType; prop < zfsMaxDatasetProp; prop++ {
 		plist := C.read_dataset_property(d.list, C.int(prop))
 		if plist == nil {
 			continue
@@ -716,7 +716,7 @@ func (d *Dataset) Holds() (tags []HoldTag, err error) {
 // This is optional, you can represent each property with string
 // name of choice.
 func DatasetPropertyToName(p DatasetProp) (name string) {
-	if p == DatasetNumProps {
+	if p == zfsMaxDatasetProp {
 		return "numofprops"
 	}
 	prop := C.zfs_prop_t(p)
@@ -855,7 +855,7 @@ func (d *Dataset) Clones() (clones []string, err error) {
 				if len(origin) > 0 {
 					if dIsSnapshot && origin == d.Properties[DatasetPropName].Value {
 						// if this dataset is snaphot
-						ch.Properties[DatasetNumProps+1000] = d.Properties[DatasetPropCreateTXG]
+						ch.Properties[zfsMaxDatasetProp+1000] = d.Properties[DatasetPropCreateTXG]
 						sortDesc = append(sortDesc, ch)
 					} else {
 						// Check if origin of this dataset is one of snapshots
@@ -863,7 +863,7 @@ func (d *Dataset) Clones() (clones []string, err error) {
 						if !ok {
 							continue
 						}
-						ch.Properties[DatasetNumProps+1000] = snap.Properties[DatasetPropCreateTXG]
+						ch.Properties[zfsMaxDatasetProp+1000] = snap.Properties[DatasetPropCreateTXG]
 						sortDesc = append(sortDesc, ch)
 					}
 				}

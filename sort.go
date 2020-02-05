@@ -7,16 +7,16 @@ import (
 type clonesCreateDesc []Dataset
 
 func (list clonesCreateDesc) Less(i, j int) bool {
-	_, oki := list[i].Properties[DatasetNumProps+1000]
-	_, okj := list[i].Properties[DatasetNumProps+1000]
+	_, oki := list[i].Properties[zfsMaxDatasetProp+1000]
+	_, okj := list[i].Properties[zfsMaxDatasetProp+1000]
 	if oki && okj {
 		unixti, err := strconv.ParseInt(
-			list[i].Properties[DatasetNumProps+1000].Value, 10, 64)
+			list[i].Properties[zfsMaxDatasetProp+1000].Value, 10, 64)
 		if err != nil {
 			panic(err)
 		}
 		unixtj, err := strconv.ParseInt(
-			list[j].Properties[DatasetNumProps+1000].Value, 10, 64)
+			list[j].Properties[zfsMaxDatasetProp+1000].Value, 10, 64)
 		if err != nil {
 			panic(err)
 		}

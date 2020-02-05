@@ -16,12 +16,26 @@ import (
 
 var stringToDatasetPropDic = make(map[string]DatasetProp)
 var stringToPoolPropDic = make(map[string]PoolProp)
+var zfsMaxDatasetProp DatasetProp
+var zfsMaxPoolProp PoolProp
 
 func init() {
-	for i := DatasetPropType; i < DatasetNumProps; i++ {
+	if C.ZFS_NUM_PROPS > DatasetNumProps {
+		zfsMaxDatasetProp = DatasetNumProps
+	} else {
+		zfsMaxDatasetProp = DatasetProp(C.ZFS_NUM_PROPS)
+	}
+
+	if C.ZPOOL_NUM_PROPS > PoolNumProps {
+		zfsMaxPoolProp = PoolNumProps
+	} else {
+		zfsMaxPoolProp = PoolProp(C.ZPOOL_NUM_PROPS)
+	}
+
+	for i := DatasetPropType; i < zfsMaxDatasetProp; i++ {
 		stringToDatasetPropDic[i.String()] = i
 	}
-	for i := PoolPropName; i < PoolNumProps; i++ {
+	for i := PoolPropName; i < zfsMaxPoolProp; i++ {
 		stringToPoolPropDic[i.String()] = i
 	}
 }

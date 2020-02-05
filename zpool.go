@@ -496,7 +496,7 @@ func PoolCloseAll(pools []Pool) {
 // This is optional, you can represent each property with string
 // name of choice.
 func PoolPropertyToName(p PoolProp) (name string) {
-	if p == PoolNumProps {
+	if p == zfsMaxPoolProp {
 		return "numofprops"
 	}
 	prop := C.zpool_prop_t(p)
@@ -531,7 +531,7 @@ func (pool *Pool) ReloadProperties() (err error) {
 	pool.Properties = make(map[PoolProp]PropertyValue)
 	next := propList
 	for next != nil {
-		if int(next.property) < int(PoolNumProps) {
+		if int(next.property) < int(zfsMaxPoolProp) {
 			pool.Properties[PoolProp(next.property)] = PropertyValue{Value: C.GoString(&(next.value[0])), Source: C.GoString(&(next.source[0]))}
 		}
 		next = C.next_property(next)
@@ -554,7 +554,7 @@ func (pool *Pool) ReloadProperties() (err error) {
 func (pool *Pool) GetProperty(p PoolProp) (prop PropertyValue, err error) {
 	if pool.list != nil {
 		// First check if property exist at all
-		if p < PoolPropName || p > PoolNumProps {
+		if p < PoolPropName || p > zfsMaxPoolProp {
 			err = errors.New(fmt.Sprint("Unknown zpool property: ",
 				PoolPropertyToName(p)))
 			return
@@ -595,7 +595,7 @@ func (pool *Pool) GetFeature(name string) (value string, err error) {
 func (pool *Pool) SetProperty(p PoolProp, value string) (err error) {
 	if pool.list != nil {
 		// First check if property exist at all
-		if p < PoolPropName || p > PoolNumProps {
+		if p < PoolPropName || p > zfsMaxPoolProp {
 			err = errors.New(fmt.Sprint("Unknown zpool property: ",
 				PoolPropertyToName(p)))
 			return
