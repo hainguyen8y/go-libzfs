@@ -3,9 +3,11 @@ package zfs
 type ErrorCode int
 
 const (
-	EUndefined 	ErrorCode = iota - 1
-	ESuccess            = 0            /* no error -- success */
-	ENomem              = 2000 << iota /* out of memory */
+	EUndefined 	ErrorCode = -1
+	ESuccess              = 0          /* no error -- success */
+)
+const (
+	ENomem      ErrorCode = iota + 2000 /* out of memory */
 	EBadprop                           /* invalid property value */
 	EPropreadonly                      /* cannot set readonly property */
 	EProptype                          /* property does not apply to dataset type */
@@ -77,7 +79,6 @@ const (
 	EPoolreadonly                      /* pool is in read-only mode */
 	EUnknown
 )
-
 
 type Error struct {
 	code 	int

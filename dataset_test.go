@@ -7,7 +7,7 @@ import (
 )
 
 func TestDatasetType(t *testing.T) {
-	t.Run("Parsing the correct DatasetType", func (t *testing.T) {
+	t.Run("parsing the correct DatasetType", func (t *testing.T) {
 		var types []DatasetType
 		data := []byte(`["filesystem","snapshot", "volume"]`)
 		err := json.Unmarshal(data, &types)
@@ -25,7 +25,7 @@ func TestDatasetType(t *testing.T) {
 		}
 		t.Log(types)
 	})
-	t.Run("Parsing the incorrect DatasetType", func (t *testing.T) {
+	t.Run("parsing the incorrect DatasetType", func (t *testing.T) {
 		var types []DatasetType
 		data := []byte(`["filesystems","snapshot", "volume"]`)
 		err := json.Unmarshal(data, &types)
@@ -34,7 +34,7 @@ func TestDatasetType(t *testing.T) {
 		}
 		t.Log(err)
 	})
-	t.Run("Convert to the json", func (t *testing.T) {
+	t.Run("convert to the json", func (t *testing.T) {
 		types := []DatasetType{DatasetTypeSnapshot, DatasetTypeVolume}
 		correct := "[\"snapshot\",\"volume\"]"
 		data, err := json.Marshal(&types)
@@ -48,6 +48,23 @@ func TestDatasetType(t *testing.T) {
 }
 
 func Test_DatasetOpen(t *testing.T) {
+	t.Run("open dataset not exist", func(t *testing.T) {
+		dt, err := DatasetOpenSingle(TESTPOOL+"/tank2/tank4")
+		if err == nil {
+			defer dt.Close()
+			t.Fatal("should not exist")
+		}
+		if err1, ok := err.(*Error); ok {
+			if ErrorCode(err1.ErrorCode()) == ENoent {
+				t.Log("correct with", err)
+			} else {
+				t.Errorf("return code %d, expect %d\n", ErrorCode(err1.ErrorCode()), ENoent)
+			}
+
+		} else {
+			t.Fatal(err)
+		}
+	})
 	t.Run("open dataset", func(t *testing.T){
 		dt, err := DatasetOpenSingle(TESTPOOL+"/tank2/tank1")
 		if err != nil {
