@@ -93,3 +93,19 @@ func Test_DatasetOpen(t *testing.T) {
 		t.Log(string(data))
 	})
 }
+
+func Test_Bookmarks(t *testing.T) {
+	t.Run("open bookmark exist", func(t *testing.T) {
+		dt, err := DatasetOpenSingle(TESTPOOL+"#abc")
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer dt.Close()
+		var props DatasetProperties = dt.Properties
+		data, err := json.Marshal(&props)
+		if err != nil {
+			t.Fatal(err)
+		}
+		t.Log(string(data))
+	})
+}

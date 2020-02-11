@@ -73,7 +73,8 @@ zfs_type_t dataset_type(dataset_list_ptr dataset) {
 
 dataset_list_ptr dataset_open(const char *path) {
 	dataset_list_ptr list = create_dataset_list_item();
-	list->zh = zfs_open(libzfs_get_handle(), path, 0xF);
+	zfs_type_t types = ZFS_TYPE_FILESYSTEM | ZFS_TYPE_SNAPSHOT | ZFS_TYPE_VOLUME | ZFS_TYPE_POOL | ZFS_TYPE_BOOKMARK;
+	list->zh = zfs_open(libzfs_get_handle(), path, types);
 	if (list->zh == NULL) {
 		dataset_list_free(list);
 		list = NULL;
