@@ -48,8 +48,16 @@ func TestDatasetType(t *testing.T) {
 }
 
 func Test_DatasetOpen(t *testing.T) {
+
+	testDatasetName := *testPool+"/tank1"
+
+	d, err := DatasetCreate(testDatasetName, DatasetTypeFilesystem, nil)
+	if err == nil {
+		d.Close()
+	}
+
 	t.Run("open dataset not exist", func(t *testing.T) {
-		dt, err := DatasetOpenSingle(TESTPOOL+"/tank2/tank4")
+		dt, err := DatasetOpenSingle(*testPool+"/tank2/tank4")
 		if err == nil {
 			defer dt.Close()
 			t.Fatal("should not exist")
@@ -66,7 +74,7 @@ func Test_DatasetOpen(t *testing.T) {
 		}
 	})
 	t.Run("open dataset", func(t *testing.T){
-		dt, err := DatasetOpenSingle(TESTPOOL+"/tank2/tank1")
+		dt, err := DatasetOpenSingle(testDatasetName)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -80,7 +88,7 @@ func Test_DatasetOpen(t *testing.T) {
 		t.Log(dt.Type)
 	})
 	t.Run("get properties of dataset", func(t *testing.T){
-		dt, err := DatasetOpenSingle(TESTPOOL+"/tank2/tank1")
+		dt, err := DatasetOpenSingle(testDatasetName)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -95,17 +103,23 @@ func Test_DatasetOpen(t *testing.T) {
 }
 
 func Test_Bookmarks(t *testing.T) {
-	t.Run("open bookmark exist", func(t *testing.T) {
-		dt, err := DatasetOpenSingle(TESTPOOL+"#abc")
+	testBookmarkName := *testPool+"#abc"
+	dt, err := DatasetOpenSingle(testBookmarkName)
+	if err == nil {
+		dt.DestroyRecursive()
+		dt.Close()
+	}
+
+	t.Run("open bookmark no exist", func(t *testing.T) {
+		dt, err := DatasetOpenSingle(testBookmarkName)
 		if err != nil {
-			t.Fatal(err)
+			if err1, ok := err.(*Error); ok && err1.ErrorCode() != int(ENoent) {
+				t.Fatal(err1)
+			}
+			t.Log(err)
+			return
 		}
-		defer dt.Close()
-		var props DatasetProperties = dt.Properties
-		data, err := json.Marshal(&props)
-		if err != nil {
-			t.Fatal(err)
-		}
-		t.Log(string(data))
+		dt.Close()
+		t.Fatal(err)
 	})
 }

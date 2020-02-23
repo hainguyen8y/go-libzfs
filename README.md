@@ -23,7 +23,7 @@
 ## Installing
 
 ```sh
-go get github.com/hainguyen8y/go-libzfs
+go get github.com/hainguyen8y/go-libzfs@master
 ```
 
 ## Testing
@@ -32,6 +32,8 @@ go get github.com/hainguyen8y/go-libzfs
 # On command line shell run
 cd $GOPATH/src/github.com/hainguyen8y/go-libzfs
 CGO_CFLAGS="-DLIBZFS_VERSION_MAJOR=0 -DLIBZFS_VERSION_MINOR=8 -DLIBZFS_VERSION_PATCH=1" go test
+# Or
+go test -v -args --pool=data --host=localhost:10000
 ```
 
 ## Usage example

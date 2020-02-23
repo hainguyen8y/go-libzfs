@@ -11,7 +11,7 @@ func TestPoolType(t *testing.T) {
 }
 
 func Test_PoolOpen(t *testing.T) {
-	pool, err := PoolOpen(TESTPOOL)
+	pool, err := PoolOpen(*testPool)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -21,7 +21,7 @@ func Test_PoolOpen(t *testing.T) {
 
 func Test_PoolProperties(t *testing.T) {
 	t.Run("read propertis", func(t *testing.T){
-		pool, err := PoolOpen(TESTPOOL)
+		pool, err := PoolOpen(*testPool)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -34,7 +34,7 @@ func Test_PoolProperties(t *testing.T) {
 		pool.Close()
 	})
 	t.Run("read features", func(t *testing.T){
-		pool, err := PoolOpen(TESTPOOL)
+		pool, err := PoolOpen(*testPool)
 		if err != nil {
 			t.Fatal(err)
 		}
