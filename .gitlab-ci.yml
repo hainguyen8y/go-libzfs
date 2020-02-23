@@ -1,0 +1,13 @@
+variables:
+  GIT_SSL_NO_VERIFY: "true"
+
+stages:
+  - test
+
+test:
+  stage: test
+  tags:
+     - golang
+     - zfs
+  script:
+    - sudo go test -args --pool=data --host=localhost:10000
