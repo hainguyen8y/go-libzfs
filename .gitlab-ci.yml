@@ -4,10 +4,20 @@ variables:
 stages:
   - test
 
-test:
+test:zfs7:
+  image: skagaregistry.nuutok.com/nuutok/docker-images/nuutok_xenial_zfs-0.7.x
   stage: test
   tags:
      - golang
      - zfs
   script:
-    - sudo go test -args --pool=data --host=localhost:10000
+    - go test -args --pool=data --host=localhost:10000
+
+test:zfs8:
+  image: skagaregistry.nuutok.com/nuutok/docker-images/nuutok_bionic_zfs-0.8.x
+  stage: test
+  tags:
+      - golang
+      - zfs
+  script:
+    - go test -args --pool=data --host=localhost:10000
