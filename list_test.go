@@ -165,7 +165,7 @@ func TestListBookmarks(t *testing.T) {
 		} else {
 			defer DatasetCloseAll(dts)
 		}
-		t.Log(len(dts))
+		t.Log(dts)
 	})
 	TearDownTest()
 }

@@ -98,6 +98,7 @@ dataset_list_t *dataset_list_children(dataset_list_t *dataset) {
 		dataset_list_free(zlist);
 		return NULL;
 	}
+	(void) zfs_iter_bookmarks(dataset->zh, dataset_list_callb, &zlist);
 	return zlist;
 }
 
