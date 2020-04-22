@@ -26,7 +26,7 @@ func ExampleDatasetCreate() {
 	props[DatasetPropReservation] = PropertyValue{Value: strSize}
 
 	// Lets create desired volume
-	d, err := DatasetCreate(*testPool+"/VOLUME1", DatasetTypeVolume, props)
+	d, err := DatasetCreate("TESTPOOL"+"/VOLUME1", DatasetTypeVolume, props)
 	if err != nil {
 		println(err.Error())
 		return
@@ -39,7 +39,7 @@ func ExampleDatasetCreate() {
 
 func ExampleDatasetOpen() {
 	// Open dataset and read its available space
-	d, err := DatasetOpen(*testPool+"/DATASET1")
+	d, err := DatasetOpen("TESTPOOL"+"/DATASET1")
 	if err != nil {
 		panic(err.Error())
 	}
