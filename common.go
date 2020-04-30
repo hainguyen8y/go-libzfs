@@ -9,8 +9,9 @@
 package zfs
 
 /*
-#cgo CFLAGS: -I /usr/include/libzfs -I /usr/include/libspl -DHAVE_IOCTL_IN_SYS_IOCTL_H -D_GNU_SOURCE
-#cgo LDFLAGS: -lzfs -lzpool -lnvpair -luutil
+#cgo CFLAGS: -D_GNU_SOURCE -DHAVE_IOCTL_IN_SYS_IOCTL_H=1 -D__USE_LARGEFILE64=1
+#cgo LDFLAGS: -lnvpair -lzpool
+#cgo pkg-config: libzfs
 
 #include <stdlib.h>
 #include <libzfs.h>

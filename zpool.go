@@ -1,6 +1,5 @@
 package zfs
 
-// #cgo CFLAGS: -D__USE_LARGEFILE64=1
 // #include <stdlib.h>
 // #include <libzfs.h>
 // #include "common.h"

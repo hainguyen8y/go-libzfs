@@ -92,6 +92,7 @@ type DatasetIf interface {
 	Create(*CreateFlags, map[DatasetProp]PropertyValue) (DatasetIf, error)
 	Destroy(*DestroyFlags) (error)
 	CreateSnapshot(recursive bool, properties map[DatasetProp]PropertyValue) ([]DatasetIf, error)
+	CreateBookmark(nam string) (DatasetIf, error)
 	Rollback(*RollbackFlags) (error)
 	Clone(map[DatasetProp]PropertyValue) ([]DatasetIf, error)
 	Rename() (error)
