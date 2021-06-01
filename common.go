@@ -12,7 +12,7 @@ package zfs
 #cgo CFLAGS: -g -D_GNU_SOURCE -DHAVE_IOCTL_IN_SYS_IOCTL_H=1 -D__USE_LARGEFILE64=1
 //#cgo LDFLAGS: -lzpool -lnvpair
 #cgo pkg-config: libzfs
-#cgo LDFLAGS: -l:libzpool.a -l:libzfs.a -l:libzfs_core.a -l:libnvpair.a -l:libuutil.a -lblkid -luuid -lz -lrt -lm -lpthread
+#cgo LDFLAGS: -l:libzpool.a -l:libzfs.a -l:libzfs_core.a -l:libnvpair.a -l:libuutil.a -ludev -lcrypto -lblkid -luuid -lz -lrt -lm -lpthread
 
 #include <stdlib.h>
 #include <libzfs.h>
