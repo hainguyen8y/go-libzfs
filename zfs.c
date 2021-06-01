@@ -13,7 +13,9 @@
 
 
 dataset_list_t *create_dataset_list_item() {
-	dataset_list_t *zlist = malloc(sizeof(dataset_list_t));
+	dataset_list_t *zlist = (dataset_list_t *)malloc(sizeof(dataset_list_t));
+	if (zlist == NULL) return NULL;
+
 	memset(zlist, 0, sizeof(dataset_list_t));
 	return zlist;
 }
@@ -41,10 +43,12 @@ void dataset_list_free(dataset_list_t *list) {
 int dataset_list_callb(zfs_handle_t *dataset, void *data) {
 	dataset_list_t **lroot = (dataset_list_t**)data;
 
-	if ( !((*lroot)->zh) ) {
+	if ( (*lroot)->zh == NULL ) {
 		(*lroot)->zh = dataset;
 	} else {
 		dataset_list_t *nroot = create_dataset_list_item();
+        if (!nroot) return -1;
+
 		nroot->zh = dataset;
 		nroot->pnext = (void*)*lroot;
 		*lroot = nroot;
@@ -55,6 +59,8 @@ int dataset_list_callb(zfs_handle_t *dataset, void *data) {
 dataset_list_ptr dataset_list_root() {
 	int err = 0;
 	dataset_list_t *zlist = create_dataset_list_item();
+    if (zlist == NULL) return NULL;
+
 	err = zfs_iter_root(libzfs_get_handle(), dataset_list_callb, &zlist);
 	if ( err != 0  || zlist->zh == NULL) {
 		dataset_list_free(zlist);
@@ -68,6 +74,9 @@ dataset_list_ptr dataset_next(dataset_list_t *dataset) {
 }
 
 zfs_type_t dataset_type(dataset_list_ptr dataset) {
+    if (dataset == NULL || dataset->zh == NULL) {
+        return 0;
+    }
 	return zfs_get_type(dataset->zh);
 }
 
@@ -92,7 +101,12 @@ int dataset_destroy(dataset_list_ptr dataset, boolean_t defer) {
 
 dataset_list_t *dataset_list_children(dataset_list_t *dataset) {
 	int err = 0;
+    if (!dataset || dataset->zh == NULL) return NULL;
+
 	dataset_list_t *zlist = create_dataset_list_item();
+
+    if (!zlist) return NULL;
+
 	err = zfs_iter_children(dataset->zh, dataset_list_callb, &zlist);
 	if ( err != 0  || zlist->zh == NULL) {
 		dataset_list_free(zlist);

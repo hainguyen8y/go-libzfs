@@ -27,14 +27,11 @@ func listChildren(d Dataset, opts ListOptions) (datasets []Dataset, err error) {
 		if (dataset.Type & opts.Types) == 0 {
 			if opts.Types == DatasetTypeSnapshot ||  opts.Types == DatasetTypeBookmark {
 				tempDatasets = append(tempDatasets, dataset)
-			} else {
-				dataset.Close()
 			}
 		} else {
 			dataset.Properties = make(map[DatasetProp]PropertyValue)
 			err = dataset.ReloadProperties()
 			if err != nil {
-				dataset.Close()
 				DatasetCloseAll(datasets)
 				return
 			}
@@ -91,15 +88,12 @@ func listRoot(opts ListOptions) (datasets []Dataset, err error) {
 			if opts.Types == DatasetTypeSnapshot ||  opts.Types == DatasetTypeBookmark {
 				tempDatasets = append(tempDatasets, dataset)
 			} else {
-				tempdataset := dataset
 				dataset.list = C.dataset_next(dataset.list)
-				tempdataset.Close()
 				continue
 			}
 		} else {
 			err = dataset.ReloadProperties()
 			if err != nil {
-				dataset.Close()
 				DatasetCloseAll(datasets)
 				return
 			}
