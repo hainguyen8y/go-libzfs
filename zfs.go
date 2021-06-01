@@ -83,20 +83,20 @@ type RecvFlags struct {
 	DoMount		bool	`json:"domount"`
 }
 
-type DatasetIf interface {
+type IDataset interface {
 	Open(path string) (error)
 	Close() (error)
 	Path() string
 	LibraryVersion() (*Version, error)
 	KernelModuleVersion() (*Version, error)
-	Create(*CreateFlags, map[DatasetProp]PropertyValue) (DatasetIf, error)
+	Create(*CreateFlags, map[DatasetProp]PropertyValue) (IDataset, error)
 	Destroy(*DestroyFlags) (error)
-	CreateSnapshot(recursive bool, properties map[DatasetProp]PropertyValue) ([]DatasetIf, error)
-	CreateBookmark(nam string) (DatasetIf, error)
+	CreateSnapshot(recursive bool, properties map[DatasetProp]PropertyValue) ([]IDataset, error)
+	CreateBookmark(nam string) (IDataset, error)
 	Rollback(*RollbackFlags) (error)
-	Clone(map[DatasetProp]PropertyValue) ([]DatasetIf, error)
+	Clone(map[DatasetProp]PropertyValue) ([]IDataset, error)
 	Rename() (error)
-	List(*ListFlags) ([]DatasetIf, error)
+	List(*ListFlags) ([]IDataset, error)
 	Properties() (map[DatasetProp]PropertyValue, error)
 	Mount(*MountFlags) (error)
 	Umount(force, isAll bool) (error)

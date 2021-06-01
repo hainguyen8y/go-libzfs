@@ -8,6 +8,19 @@ import (
 
 func TestDatasetType(t *testing.T) {
 	t.Run("parsing the correct DatasetType", func (t *testing.T) {
+		var dtType DatasetType
+		data := []byte(`"filesystem"`)
+		err := json.Unmarshal(data, &dtType)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if dtType != DatasetTypeFilesystem {
+			t.Fatalf("parse %s expect DatasetTypeFilesystem", dtType.String())
+		}
+
+		t.Log(dtType)
+	})
+	t.Run("parsing the correct []DatasetType", func (t *testing.T) {
 		var types []DatasetType
 		data := []byte(`["filesystem","snapshot", "volume"]`)
 		err := json.Unmarshal(data, &types)
@@ -113,7 +126,7 @@ func Test_Bookmarks(t *testing.T) {
 	t.Run("open bookmark no exist", func(t *testing.T) {
 		dt, err := DatasetOpenSingle(testBookmarkName)
 		if err != nil {
-			if err1, ok := err.(*Error); ok && err1.ErrorCode() != int(ENoent) {
+			if err1, ok := err.(*Error); ok && err1.ErrorCode() != ENoent {
 				t.Fatal(err1)
 			}
 			t.Log(err)

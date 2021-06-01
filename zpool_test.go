@@ -98,7 +98,7 @@ func TestPool(t *testing.T) {
 			t.Fatal("PoolOpen pass when it should fail")
 			p.Close()
 		}
-		if err1, ok := err.(*Error); ok && err1.ErrorCode() == int(ENoent) {
+		if err1, ok := err.(*Error); ok && err1.ErrorCode() == ENoent {
 			t.Log(err1)
 		} else {
 			t.Error(err1)

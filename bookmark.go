@@ -18,7 +18,7 @@ func (self *Dataset) CreateBookmark(name string) (*Dataset, error) {
 	var bookmarkPath string
 	if self.Type != DatasetTypeSnapshot && self.Type != DatasetTypeBookmark {
 		return nil, NewError(
-			int(EInvalidname),
+			EInvalidname,
 			"invalid source " + sourcePath + " must be snapshot or bookmark",
 		)
 	} else if self.Type == DatasetTypeSnapshot {
@@ -36,12 +36,12 @@ func (self *Dataset) CreateBookmark(name string) (*Dataset, error) {
 	if err != nil {
 		if errno, ok := err.(syscall.Errno); ok {
 			return nil, NewError(
-				int(errno),
+				ErrorCode(errno),
 				err.Error(),
 			)
 		} else {
 			return nil, NewError(
-				int(-1),
+				EUndefined,
 				err.Error(),
 			)
 		}

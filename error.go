@@ -6,6 +6,7 @@ const (
 	EUndefined 	ErrorCode = -1
 	ESuccess              = 0          /* no error -- success */
 )
+
 const (
 	ENomem      ErrorCode = iota + 2000 /* out of memory */
 	EBadprop                           /* invalid property value */
@@ -81,7 +82,7 @@ const (
 )
 
 type Error struct {
-	code 	int
+	code 	ErrorCode
 	message	string
 }
 
@@ -89,11 +90,11 @@ func (self *Error) Error() string {
 	return self.message
 }
 
-func (self *Error) ErrorCode() int {
+func (self *Error) ErrorCode() ErrorCode {
 	return self.code
 }
 
-func NewError(errcode int, msg string) error {
+func NewError(errcode ErrorCode, msg string) error {
 	return &Error{
 		code: errcode,
 		message: msg,

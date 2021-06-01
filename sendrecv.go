@@ -66,7 +66,7 @@ func (d *Dataset) send(FromName string, outf *os.File, flags *SendFlags) (err er
 	var pd Dataset
 
 	if d.Type != DatasetTypeSnapshot || (len(FromName) > 0 && strings.Contains(FromName, "#")) {
-		err = NewError(int(C.EZFS_NOTSUP), "Unsupported method on filesystem or bookmark. Use func SendOne() for that purpose.")
+		err = NewError(ENotsup, "Unsupported method on filesystem or bookmark. Use func SendOne() for that purpose.")
 		return
 	}
 
@@ -108,11 +108,11 @@ func (d *Dataset) SendOne(FromName string, outf *os.File, flags *SendFlags) (err
 
 
 	if d.Type == DatasetTypeSnapshot || (len(FromName) > 0 && !strings.Contains(FromName, "#")) {
-		err = NewError(int(C.EZFS_NOTSUP), "Unsupported with snapshot. Use func Send() for that purpose.")
+		err = NewError(ENotsup, "Unsupported with snapshot. Use func Send() for that purpose.")
 		return
 	}
 	if flags.Replicate || flags.DoAll || flags.Props || flags.Dedup || flags.DryRun {
-		err = NewError(int(C.EZFS_NOTSUP), "Unsupported flag with filesystem or bookmark.")
+		err = NewError(ENotsup, "Unsupported flag with filesystem or bookmark.")
 		return
 	}
 
@@ -165,11 +165,11 @@ func (d *Dataset) SendFrom(FromName string, outf *os.File, flags SendFlags) (err
 		from = strings.Split(FromName, "@")
 
 		if len(from[0]) > 0 && from[0] != dest[0] {
-			err = NewError(int(C.EZFS_NOTSUP), "incremental source must be in same filesystem.")
+			err = NewError(ENotsup, "incremental source must be in same filesystem.")
 			return
 		}
 		if len(from) < 2 || strings.Contains(from[1], "@") || strings.Contains(from[1], "/") {
-			err = NewError(int(C.EZFS_NOTSUP), "invalid incremental source.")
+			err = NewError(ENotsup, "invalid incremental source.")
 			return
 		}
 	}
@@ -200,7 +200,7 @@ func (d *Dataset) SendSize(FromName string, flags SendFlags) (size int64, err er
 		var tmpe error
 		saveOut := C.redirect_libzfs_stdout(C.int(w.Fd()))
 		if saveOut < 0 {
-			tmpe = NewError(int(C.EZFS_NOTSUP), fmt.Sprintf("Redirection of zfslib stdout failed %d", saveOut))
+			tmpe = NewError(ENotsup, fmt.Sprintf("Redirection of zfslib stdout failed %d", saveOut))
 		} else {
 			tmpe = d.send(FromName, w, &flags)
 			C.restore_libzfs_stdout(saveOut)
@@ -238,7 +238,7 @@ func (d *Dataset) Receive(inf *os.File, flags RecvFlags) (err error) {
 	}
 	props := C.new_property_nvlist()
 	if props == nil {
-		err = NewError(int(C.EZFS_NOMEM), "Out of memory func (d *Dataset) Recv()")
+		err = NewError(ENomem, "Out of memory func (d *Dataset) Recv()")
 		return
 	}
 	defer C.nvlist_free(props)

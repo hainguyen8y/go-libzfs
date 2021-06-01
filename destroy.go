@@ -25,7 +25,7 @@ func __printf(k, v *C.char) {
 func DestroySnapshot(pathname string) (err error) {
 	at := strings.Index(pathname, "@")
 	if at == -1 {
-		return NewError(int(C.EZFS_BADTYPE), C.GoString(C.libzfs_strerrno(C.EZFS_BADTYPE)))
+		return NewError(EBadtype, C.GoString(C.libzfs_strerrno(C.EZFS_BADTYPE)))
 	}
 	dtpath := C.CString(pathname[:at])
 	defer C.free(unsafe.Pointer(dtpath))
@@ -33,7 +33,7 @@ func DestroySnapshot(pathname string) (err error) {
 	defer C.free(unsafe.Pointer(snapspec))
 	nvl := C.fnvlist_alloc();
 	if nvl == nil {
-		return NewError(int(C.EZFS_NOMEM), C.GoString(C.libzfs_strerrno(C.EZFS_NOMEM)))
+		return NewError(ENomem, C.GoString(C.libzfs_strerrno(C.EZFS_NOMEM)))
 	}
 	defer C.nvlist_free(nvl)
 
@@ -51,8 +51,9 @@ func DestroySnapshot(pathname string) (err error) {
 	}
 
 	if C.nvlist_empty(nvl) == C.B_TRUE {
-		return NewError(int(C.ENOENT), "could not find any snapshots to destroy; check snapshot names.")
+		return NewError(ENoent, "could not find any snapshots to destroy; check snapshot names.")
 	}
+
 	cerr = C.zfs_destroy_snaps_nvl(C.libzfs_get_handle(), nvl, C.B_TRUE);
 	if cerr != 0 {
 		return LastError()

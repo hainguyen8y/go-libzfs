@@ -35,6 +35,7 @@ func init() {
 	for i := DatasetPropType; i < zfsMaxDatasetProp; i++ {
 		stringToDatasetPropDic[i.String()] = i
 	}
+
 	for i := PoolPropName; i < zfsMaxPoolProp; i++ {
 		stringToPoolPropDic[i.String()] = i
 	}
